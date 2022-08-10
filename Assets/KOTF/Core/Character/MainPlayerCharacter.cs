@@ -4,33 +4,30 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
-using UnityEngine.InputSystem;
 using KOTF.Utils.Extensions;
+using KOTF.Core.Input;
 
 namespace KOTF.Core.Character
 {
     public class MainPlayerCharacter : MonoBehaviour, ICharacter
     {
         [Header("Movement")]
-        [SerializeField] private InputAction _movementInput = null;
         [SerializeField] private float _movementSpeed = 10.0f;
+        private InputHandler _movementInput = null;
+
+        private void Start()
+        {
+            InputFactory.Create();
+
+            _movementInput = InputFactory.GetInput(Input.InputActionType.Movement);
+            if (_movementInput == null)
+                Debug.LogError($"{_movementInput} is null which is not permitted!");
+        }
 
         private void Update()
         {
             ProcessInput();
         }
-
-        #region Create Wrapper for the InputSystem
-        private void OnEnable()
-        {
-            _movementInput.Enable();
-        }
-
-        private void OnDisable()
-        {
-            _movementInput.Disable();
-        }
-        #endregion
 
         private void ProcessInput()
         {
@@ -40,8 +37,8 @@ namespace KOTF.Core.Character
         public void Move()
         {
             // Read Input using new Input System.
-            float longitudinalValue = _movementInput.ReadValue<Vector3>().z;
-            float lateralValue = _movementInput.ReadValue<Vector3>().x;
+            float longitudinalValue = _movementInput.Input.ReadValue<Vector3>().z;
+            float lateralValue = _movementInput.Input.ReadValue<Vector3>().x;
 
             // Log Input.
             Debug.Log($"Longitudinal value: {longitudinalValue}");
