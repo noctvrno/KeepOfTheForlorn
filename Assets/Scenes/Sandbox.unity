@@ -617,72 +617,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d7513fa7868f4444b9578a148a80b2d6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _movementInput:
-    m_Name: Movement Input
-    m_Type: 0
-    m_ExpectedControlType: 
-    m_Id: fec93a82-235e-437f-9178-004c1fa7a814
-    m_Processors: 
-    m_Interactions: 
-    m_SingletonActionBindings:
-    - m_Name: 3D Vector
-      m_Id: 7f0ecf48-814e-4c9f-a02e-16635654311e
-      m_Path: 3DVector
-      m_Interactions: 
-      m_Processors: 
-      m_Groups: 
-      m_Action: Movement Input
-      m_Flags: 4
-    - m_Name: up
-      m_Id: c98c02d3-0be1-4624-b3ad-71eabde1eacc
-      m_Path: 
-      m_Interactions: 
-      m_Processors: 
-      m_Groups: 
-      m_Action: Movement Input
-      m_Flags: 8
-    - m_Name: down
-      m_Id: 9f339614-0ae4-4878-8e98-4d53cf496215
-      m_Path: 
-      m_Interactions: 
-      m_Processors: 
-      m_Groups: 
-      m_Action: Movement Input
-      m_Flags: 8
-    - m_Name: left
-      m_Id: 3709067f-d71c-4ca0-9b8e-a2bdf46ed7dd
-      m_Path: 
-      m_Interactions: 
-      m_Processors: 
-      m_Groups: 
-      m_Action: Movement Input
-      m_Flags: 8
-    - m_Name: right
-      m_Id: b0007a7d-40e4-459d-b6c4-a85c18eaa2a9
-      m_Path: 
-      m_Interactions: 
-      m_Processors: 
-      m_Groups: 
-      m_Action: Movement Input
-      m_Flags: 8
-    - m_Name: forward
-      m_Id: 1bdd2431-321d-4e1c-a7e2-794067d63c20
-      m_Path: 
-      m_Interactions: 
-      m_Processors: 
-      m_Groups: 
-      m_Action: Movement Input
-      m_Flags: 8
-    - m_Name: backward
-      m_Id: 83d4f187-742b-40cd-a3e3-851d7c1b639d
-      m_Path: 
-      m_Interactions: 
-      m_Processors: 
-      m_Groups: 
-      m_Action: Movement Input
-      m_Flags: 8
-    m_Flags: 0
   _movementSpeed: 15
+  _rotationXSpeed: 0.2
+  _rotationYSpeed: 0.2
+  _rotationXMin: -45
+  _rotationXMax: 45
 --- !u!54 &864593601
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -706,7 +645,7 @@ CapsuleCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 864593597}
-  m_Material: {fileID: 13400000, guid: 7b0d49f7cb5bfef4f80610a355ea16e1, type: 2}
+  m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
   m_Radius: 1.5124677
@@ -762,7 +701,7 @@ MeshCollider:
   serializedVersion: 4
   m_Convex: 0
   m_CookingOptions: 30
-  m_Mesh: {fileID: 1517286647}
+  m_Mesh: {fileID: 1745261788}
 --- !u!33 &884903822
 MeshFilter:
   m_ObjectHideFlags: 10
@@ -770,7 +709,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 884903819}
-  m_Mesh: {fileID: 1517286647}
+  m_Mesh: {fileID: 1745261788}
 --- !u!23 &884903823
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -1525,8 +1464,8 @@ MonoBehaviour:
     m_AreaError: 15
   m_PreserveMeshAssetOnDestroy: 0
   assetGuid: 
-  m_Mesh: {fileID: 1517286647}
-  m_VersionIndex: 5511
+  m_Mesh: {fileID: 1745261788}
+  m_VersionIndex: 5514
   m_IsSelectable: 1
   m_SelectedFaces: 
   m_SelectedEdges: []
@@ -1648,13 +1587,13 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!43 &1517286647
+--- !u!43 &1745261788
 Mesh:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh24216
+  m_Name: pb_Mesh24226
   serializedVersion: 11
   m_SubMeshes:
   - serializedVersion: 2

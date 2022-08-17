@@ -13,5 +13,10 @@ namespace KOTF.Utils.Extensions
         {
             return value * Time.deltaTime;
         }
+
+        public static Vector2 ToDeltaTime(this Vector2 value)
+        {
+            return value * Time.deltaTime;
+        }
     }
 }

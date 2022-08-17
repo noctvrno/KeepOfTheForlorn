@@ -15,7 +15,7 @@ namespace KOTF.Core.Character
         [SerializeField] private float _movementSpeed = 10.0f;
         private InputHandler _movementInput = null;
 
-        private void Start()
+        private void Awake()
         {
             InputFactory.Create();
 
