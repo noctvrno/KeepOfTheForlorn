@@ -10,7 +10,8 @@ namespace KOTF.Core.Input
 {
     public enum InputActionType
     {
-        Movement
+        Movement,
+        Attack
     }
 
     public static class InputFactory
@@ -32,6 +33,9 @@ namespace KOTF.Core.Input
                             .With("Left", GetKeyboardBinding("a"))
                             .With("Right", GetKeyboardBinding("d"));
                         break;
+                    case InputActionType.Attack:
+                        inputHandler.Input.AddBinding($"{GetMouseBinding("leftButton")}");
+                        break;
                 }
 
                 inputHandler.OnEnable();
@@ -42,6 +46,11 @@ namespace KOTF.Core.Input
         private static String GetKeyboardBinding(String key)
         {
             return $"<Keyboard>/{key}";
+        }
+
+        private static String GetMouseBinding(String key)
+        {
+            return $"<Mouse>/{key}";
         }
 
         public static InputHandler GetInput(InputActionType actionType)

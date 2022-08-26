@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using KOTF.Utils.Extensions;
 using KOTF.Core.Input;
+using KOTF.Utils.StringReferences;
 
 namespace KOTF.Core.Character
 {
@@ -14,14 +15,22 @@ namespace KOTF.Core.Character
         [Header("Movement")]
         [SerializeField] private float _movementSpeed = 10.0f;
         private InputHandler _movementInput = null;
+        private InputHandler _attackInput = null;
+        private Animator _animator = null;
 
         private void Awake()
         {
             InputFactory.Create();
 
-            _movementInput = InputFactory.GetInput(Input.InputActionType.Movement);
+            _movementInput = InputFactory.GetInput(InputActionType.Movement);
+            _attackInput = InputFactory.GetInput(InputActionType.Attack);
             if (_movementInput == null)
                 Debug.LogError($"{_movementInput} is null which is not permitted!");
+        }
+
+        private void Start()
+        {
+            _animator = GetComponent<Animator>();
         }
 
         private void Update()
@@ -32,6 +41,7 @@ namespace KOTF.Core.Character
         private void ProcessInput()
         {
             Move();
+            Attack();
         }
 
         public void Move()
@@ -51,6 +61,11 @@ namespace KOTF.Core.Character
         private Vector3 ComputeMovementVector(float longitudinalValue, float lateralValue)
         {
             return (lateralValue * Vector3.right + longitudinalValue * Vector3.forward).ToDeltaTime() * _movementSpeed;
+        }
+
+        public void Attack()
+        {
+            _animator.SetBool(AnimationConstants.ATTACK, Convert.ToBoolean(_attackInput.Input.ReadValue<float>()));
         }
     }
 }
