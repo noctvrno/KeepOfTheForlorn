@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace KOTF.Core.Character
+namespace KOTF.Core.Gameplay.Character
 {
     public interface ICharacter
     {
