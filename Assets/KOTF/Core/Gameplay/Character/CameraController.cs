@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace KOTF.Core.Character
+namespace KOTF.Core.Gameplay.Character
 {
     public class CameraController : MonoBehaviour
     {

@@ -8,7 +8,7 @@ using KOTF.Utils.Extensions;
 using KOTF.Core.Input;
 using KOTF.Utils.StringReferences;
 
-namespace KOTF.Core.Character
+namespace KOTF.Core.Gameplay.Character
 {
     public class MainPlayerCharacter : MonoBehaviour, ICharacter
     {
