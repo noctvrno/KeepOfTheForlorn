@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace KOTF.Core.Services
 {
-    public class PrefabLoaderService : IService
+    public class PrefabService : IService
     {
 
     }
