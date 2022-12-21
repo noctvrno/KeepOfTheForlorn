@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace KOTF.Core.Services
+namespace KOTF.Utils.Path
 {
-    public class PrefabService : IService
+    public static class PathUtils
     {
-
+        public const string WEAPON_PREFABS = "Prefabs/Weapons";
     }
 }

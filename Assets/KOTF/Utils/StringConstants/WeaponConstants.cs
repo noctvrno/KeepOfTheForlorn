@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace KOTF.Utils.StringReferences
+namespace KOTF.Utils.StringConstants
 {
-    public static class AnimationConstants
+    public class WeaponPrefabNames
     {
-        public const string ATTACK = "IsAttacking";
+        public const string LONGSWORD = "Longsword";
     }
 }

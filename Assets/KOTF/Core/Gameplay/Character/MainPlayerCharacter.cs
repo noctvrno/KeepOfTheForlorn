@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using KOTF.Utils.Extensions;
 using KOTF.Core.Input;
-using KOTF.Utils.StringReferences;
+using KOTF.Utils.StringConstants;
 
 namespace KOTF.Core.Gameplay.Character
 {

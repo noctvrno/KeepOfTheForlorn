@@ -9,7 +9,9 @@ namespace KOTF.Core.Initialization
         {
             InputFactory.Create();
             var serviceProvider = ServiceProvider.GetInstance();
-            serviceProvider.RegisterService<PrefabService>();
+            serviceProvider.RegisterService<EquipmentService>();
+
+            serviceProvider.Get<EquipmentService>().Load();
         }
     }
 }
