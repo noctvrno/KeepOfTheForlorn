@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace KOTF.Utils.StringReferences
+namespace KOTF.Core.Services
 {
-    public static class AnimationConstants
+    public interface IService
     {
-        public const string ATTACK = "IsAttacking";
+
     }
 }

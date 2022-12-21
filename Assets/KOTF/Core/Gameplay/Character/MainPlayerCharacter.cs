@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using KOTF.Utils.Extensions;
 using KOTF.Core.Input;
-using KOTF.Utils.StringReferences;
+using KOTF.Utils.StringConstants;
 
 namespace KOTF.Core.Gameplay.Character
 {
@@ -20,7 +20,7 @@ namespace KOTF.Core.Gameplay.Character
 
         private void Awake()
         {
-            InputFactory.Create();
+            new Initialization.Initializer().Initialize();
 
             _movementInput = InputFactory.GetInput(InputActionType.Movement);
             _attackInput = InputFactory.GetInput(InputActionType.Attack);
