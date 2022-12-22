@@ -6,7 +6,11 @@ using System.Threading.Tasks;
 using UnityEngine;
 using KOTF.Utils.Extensions;
 using KOTF.Core.Input;
+using KOTF.Core.Services;
 using KOTF.Utils.StringConstants;
+using UnityEditorInternal;
+using AnimatorController = UnityEditor.Animations.AnimatorController;
+using Object = UnityEngine.Object;
 
 namespace KOTF.Core.Gameplay.Character
 {
@@ -14,9 +18,13 @@ namespace KOTF.Core.Gameplay.Character
     {
         [Header("Movement")]
         [SerializeField] private float _movementSpeed = 10.0f;
+        [SerializeField] private AnimationClip _testAnimation;
         private InputHandler _movementInput = null;
         private InputHandler _attackInput = null;
         private Animator _animator = null;
+
+        private ServiceProvider _serviceProvider;
+        private EquipmentService _equipmentService;
 
         private void Awake()
         {
@@ -26,11 +34,19 @@ namespace KOTF.Core.Gameplay.Character
             _attackInput = InputFactory.GetInput(InputActionType.Attack);
             if (_movementInput == null)
                 Debug.LogError($"{_movementInput} is null which is not permitted!");
+
+            _serviceProvider = ServiceProvider.GetInstance();
+            _equipmentService = _serviceProvider.Get<EquipmentService>();
+
+            _equipmentService.AttachObjectTo(WeaponPrefabNames.LONGSWORD, gameObject);
         }
 
         private void Start()
         {
             _animator = GetComponent<Animator>();
+
+            // Update the Animator to make sure that all references and properties are correct.
+            _animator.runtimeAnimatorController = new AnimatorOverrideController(_animator.runtimeAnimatorController);
         }
 
         private void Update()

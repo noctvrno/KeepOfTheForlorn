@@ -42,5 +42,23 @@ namespace KOTF.Core.Services
                 _prefabNameToObjects.Add(weaponPrefab.name, weaponPrefab);
             }
         }
+
+        /// <summary>
+        /// Attaches an Object based on the provided <paramref name="key"/> to the <paramref name="host"/>.
+        /// </summary>
+        public void AttachObjectTo(string key, GameObject host)
+        {
+            if (string.IsNullOrEmpty(key) || host == null || !_prefabNameToObjects.TryGetValue(key, out Object attachment))
+                return;
+
+            var attachmentGameObject = Object.Instantiate(attachment, host.transform) as GameObject;
+            if (attachmentGameObject == null || attachmentGameObject.transform.parent != host.transform)
+            {
+                Debug.LogError($"Could not attach {WeaponPrefabNames.LONGSWORD} to {host.name}");
+                return;
+            }
+
+            attachmentGameObject.name = key;
+        }
     }
 }
