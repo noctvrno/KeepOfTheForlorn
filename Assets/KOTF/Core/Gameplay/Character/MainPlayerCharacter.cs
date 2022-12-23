@@ -8,9 +8,6 @@ using KOTF.Utils.Extensions;
 using KOTF.Core.Input;
 using KOTF.Core.Services;
 using KOTF.Utils.StringConstants;
-using UnityEditorInternal;
-using AnimatorController = UnityEditor.Animations.AnimatorController;
-using Object = UnityEngine.Object;
 
 namespace KOTF.Core.Gameplay.Character
 {
@@ -18,7 +15,6 @@ namespace KOTF.Core.Gameplay.Character
     {
         [Header("Movement")]
         [SerializeField] private float _movementSpeed = 10.0f;
-        [SerializeField] private AnimationClip _testAnimation;
         private InputHandler _movementInput = null;
         private InputHandler _attackInput = null;
         private Animator _animator = null;
