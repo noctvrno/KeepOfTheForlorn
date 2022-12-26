@@ -34,7 +34,7 @@ namespace KOTF.Core.Gameplay.Character
             _serviceProvider = ServiceProvider.GetInstance();
             _equipmentService = _serviceProvider.Get<EquipmentService>();
 
-            _equipmentService.AttachObjectTo(WeaponPrefabNames.LONGSWORD, gameObject);
+            _equipmentService.AttachEquipmentTo(WeaponPrefabNames.LONGSWORD, gameObject);
         }
 
         private void Start()

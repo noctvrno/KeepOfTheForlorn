@@ -46,7 +46,7 @@ namespace KOTF.Core.Services
         /// <summary>
         /// Attaches an Object based on the provided <paramref name="key"/> to the <paramref name="host"/>.
         /// </summary>
-        public void AttachObjectTo(string key, GameObject host)
+        public void AttachEquipmentTo(string key, GameObject host)
         {
             if (string.IsNullOrEmpty(key) || host == null || !_prefabNameToObjects.TryGetValue(key, out Object attachment))
                 return;
