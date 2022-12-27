@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace KOTF.Core.Gameplay.Equipment
 {
-    public class Weapon : ScriptableObject, IEquipment
+    public class Weapon : MonoBehaviour, IEquipment
     {
         public string Name { get; set; }
         public string Description { get; set; }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using KOTF.Core.Gameplay.Equipment;
 using UnityEngine;
 using KOTF.Utils.Extensions;
 using KOTF.Core.Input;
@@ -34,7 +35,7 @@ namespace KOTF.Core.Gameplay.Character
             _serviceProvider = ServiceProvider.GetInstance();
             _equipmentService = _serviceProvider.Get<EquipmentService>();
 
-            _equipmentService.AttachEquipmentTo(WeaponPrefabNames.LONGSWORD, gameObject);
+            _equipmentService.AttachEquipmentTo<Weapon>(WeaponPrefabNames.LONGSWORD, gameObject);
         }
 
         private void Start()

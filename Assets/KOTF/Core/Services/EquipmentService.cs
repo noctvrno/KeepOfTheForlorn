@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using KOTF.Core.Gameplay.Equipment;
 using KOTF.Utils.Path;
 using KOTF.Utils.StringConstants;
 using UnityEngine;
@@ -16,14 +17,10 @@ namespace KOTF.Core.Services
     {
         // The key is a string for now as we are lacking any other identifiers.
         // In the future, the key should be a Guid.
-        private Dictionary<string, Object> _prefabNameToObjects = new();
+        private Dictionary<string, IEquipment> _nameToEquipments = new();
 
-        public void Load()
-        {
-            LoadWeapons();
-        }
-
-        private void LoadWeapons()
+        public void Init<T>()
+            where T : Object, IEquipment
         {
             // The reflection usage here is temporary and it's only here to mimic database querying.
             HashSet<string> weaponPrefabNamesConstFields = typeof(WeaponPrefabNames)
@@ -31,7 +28,8 @@ namespace KOTF.Core.Services
                 .Where(fi => fi.IsLiteral && !fi.IsInitOnly).Select(x => x.GetRawConstantValue().ToString())
                 .ToHashSet();
 
-            foreach (var weaponPrefab in Resources.LoadAll(Path.Combine(PathUtils.WEAPON_PREFABS)))
+            // Weapon Prefabs path hardcoded for now, it should be decided based on the type in the future.
+            foreach (var weaponPrefab in Resources.LoadAll<T>(Path.Combine(PathUtils.WEAPON_PREFABS)))
             {
                 if (!weaponPrefabNamesConstFields.Contains(weaponPrefab.name))
                 {
@@ -39,20 +37,22 @@ namespace KOTF.Core.Services
                     continue;
                 }
 
-                _prefabNameToObjects.Add(weaponPrefab.name, weaponPrefab);
+                _nameToEquipments.Add(weaponPrefab.name, weaponPrefab);
             }
         }
+
 
         /// <summary>
         /// Attaches an Object based on the provided <paramref name="key"/> to the <paramref name="host"/>.
         /// </summary>
-        public void AttachEquipmentTo(string key, GameObject host)
+        public void AttachEquipmentTo<T>(string key, GameObject host)
+            where T : Object, IEquipment
         {
-            if (string.IsNullOrEmpty(key) || host == null || !_prefabNameToObjects.TryGetValue(key, out Object attachment))
+            if (string.IsNullOrEmpty(key) || host == null || !_nameToEquipments.TryGetValue(key, out IEquipment attachment))
                 return;
 
-            var attachmentGameObject = Object.Instantiate(attachment, host.transform) as GameObject;
-            if (attachmentGameObject == null || attachmentGameObject.transform.parent != host.transform)
+            var attachmentGameObject = Object.Instantiate(attachment as T, host.transform) as Object;
+            if (attachmentGameObject == null)
             {
                 Debug.LogError($"Could not attach {WeaponPrefabNames.LONGSWORD} to {host.name}");
                 return;
