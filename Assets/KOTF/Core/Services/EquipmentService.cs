@@ -29,7 +29,7 @@ namespace KOTF.Core.Services
                 .ToHashSet();
 
             // Weapon Prefabs path hardcoded for now, it should be decided based on the type in the future.
-            foreach (var weaponPrefab in Resources.LoadAll<T>(Path.Combine(PathUtils.WEAPON_PREFABS)))
+            foreach (var weaponPrefab in Resources.LoadAll<T>(PathUtils.WEAPON_PREFABS))
             {
                 if (!weaponPrefabNamesConstFields.Contains(weaponPrefab.name))
                 {
@@ -40,7 +40,6 @@ namespace KOTF.Core.Services
                 _nameToEquipments.Add(weaponPrefab.name, weaponPrefab);
             }
         }
-
 
         /// <summary>
         /// Attaches an Object based on the provided <paramref name="key"/> to the <paramref name="host"/>.
