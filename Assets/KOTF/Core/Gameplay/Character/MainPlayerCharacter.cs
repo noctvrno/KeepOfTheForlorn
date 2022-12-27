@@ -3,14 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using KOTF.Core.Gameplay.Equipment;
 using UnityEngine;
 using KOTF.Utils.Extensions;
 using KOTF.Core.Input;
 using KOTF.Core.Services;
 using KOTF.Utils.StringConstants;
-using UnityEditorInternal;
-using AnimatorController = UnityEditor.Animations.AnimatorController;
-using Object = UnityEngine.Object;
 
 namespace KOTF.Core.Gameplay.Character
 {
@@ -18,7 +16,6 @@ namespace KOTF.Core.Gameplay.Character
     {
         [Header("Movement")]
         [SerializeField] private float _movementSpeed = 10.0f;
-        [SerializeField] private AnimationClip _testAnimation;
         private InputHandler _movementInput = null;
         private InputHandler _attackInput = null;
         private Animator _animator = null;
@@ -38,7 +35,7 @@ namespace KOTF.Core.Gameplay.Character
             _serviceProvider = ServiceProvider.GetInstance();
             _equipmentService = _serviceProvider.Get<EquipmentService>();
 
-            _equipmentService.AttachObjectTo(WeaponPrefabNames.LONGSWORD, gameObject);
+            _equipmentService.AttachEquipmentTo<Weapon>(WeaponPrefabNames.LONGSWORD, gameObject);
         }
 
         private void Start()

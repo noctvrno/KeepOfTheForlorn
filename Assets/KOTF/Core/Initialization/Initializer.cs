@@ -1,4 +1,5 @@
-﻿using KOTF.Core.Input;
+﻿using KOTF.Core.Gameplay.Equipment;
+using KOTF.Core.Input;
 using KOTF.Core.Services;
 
 namespace KOTF.Core.Initialization
@@ -11,7 +12,7 @@ namespace KOTF.Core.Initialization
             var serviceProvider = ServiceProvider.GetInstance();
             serviceProvider.RegisterService<EquipmentService>();
 
-            serviceProvider.Get<EquipmentService>().Load();
+            serviceProvider.Get<EquipmentService>().Init<Weapon>();
         }
     }
 }
