@@ -23,6 +23,8 @@ namespace KOTF.Core.Gameplay.Character
         private ServiceProvider _serviceProvider;
         private EquipmentService _equipmentService;
 
+        public Weapon WieldedWeapon { get; set; }
+
         private void Awake()
         {
             new Initialization.Initializer().Initialize();
@@ -63,10 +65,6 @@ namespace KOTF.Core.Gameplay.Character
             float longitudinalValue = _movementInput.Input.ReadValue<Vector3>().z;
             float lateralValue = _movementInput.Input.ReadValue<Vector3>().x;
 
-            // Log Input.
-            Debug.Log($"Longitudinal value: {longitudinalValue}");
-            Debug.Log($"Lateral value: {lateralValue}");
-
             // Apply corresponding forces.
             gameObject.transform.Translate(ComputeMovementVector(longitudinalValue, lateralValue));
         }
@@ -79,6 +77,16 @@ namespace KOTF.Core.Gameplay.Character
         public void Attack()
         {
             _animator.SetBool(AnimationConstants.ATTACK, Convert.ToBoolean(_attackInput.Input.ReadValue<float>()));
+        }
+
+        public void OnEnterAttackWindow()
+        {
+            WieldedWeapon.Collider.enabled = true;
+        }
+
+        public void OnExitAttackWindow()
+        {
+            WieldedWeapon.Collider.enabled = false;
         }
     }
 }
