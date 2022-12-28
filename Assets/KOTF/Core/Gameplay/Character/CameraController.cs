@@ -38,7 +38,6 @@ namespace KOTF.Core.Gameplay.Character
 
             // Apply the rotation.
             transform.eulerAngles = _rotation;
-            Debug.Log($"Current Euler angles: {transform.eulerAngles}");
         }
     }
 }

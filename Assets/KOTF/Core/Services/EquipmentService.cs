@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using KOTF.Core.Gameplay.Character;
 using KOTF.Core.Gameplay.Equipment;
 using KOTF.Utils.Path;
 using KOTF.Utils.StringConstants;
@@ -57,7 +57,13 @@ namespace KOTF.Core.Services
                 return;
             }
 
-            attachmentGameObject.name = key;
+            // Casting to Weapon here is temporary as it is not sustainable.
+            if (attachmentGameObject is not Weapon weapon || !host.TryGetComponent(out ICharacter hostCharacter))
+                return;
+
+            hostCharacter.WieldedWeapon = weapon;
+            weapon.Owner = hostCharacter;
+            weapon.name = key;
         }
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using KOTF.Core.Gameplay.Character;
 
 namespace KOTF.Core.Gameplay.Equipment
 {
@@ -10,5 +11,6 @@ namespace KOTF.Core.Gameplay.Equipment
     {
         string Name { get; }
         string Description { get; }
+        ICharacter Owner { get; set; }
     }
 }
