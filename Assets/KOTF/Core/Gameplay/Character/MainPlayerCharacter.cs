@@ -16,12 +16,13 @@ namespace KOTF.Core.Gameplay.Character
     {
         [Header("Movement")]
         [SerializeField] private float _movementSpeed = 10.0f;
-        private InputHandler _movementInput = null;
-        private InputHandler _attackInput = null;
-        private Animator _animator = null;
+        private InputHandler _movementInput;
+        private InputHandler _attackInput;
+        private Animator _animator;
 
         private ServiceProvider _serviceProvider;
         private EquipmentService _equipmentService;
+        private CharacterColliderService _characterColliderService;
 
         public Weapon WieldedWeapon { get; set; }
 
@@ -46,6 +47,9 @@ namespace KOTF.Core.Gameplay.Character
 
             // Update the Animator to make sure that all references and properties are correct.
             _animator.runtimeAnimatorController = new AnimatorOverrideController(_animator.runtimeAnimatorController);
+
+            var serviceProvider = ServiceProvider.GetInstance();
+            _characterColliderService = serviceProvider.Get<CharacterColliderService>();
         }
 
         private void Update()
@@ -87,6 +91,7 @@ namespace KOTF.Core.Gameplay.Character
         public void OnExitAttackWindow()
         {
             WieldedWeapon.Collider.enabled = false;
+            _characterColliderService.Reset();
         }
     }
 }
