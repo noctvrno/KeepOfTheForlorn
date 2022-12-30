@@ -1,4 +1,7 @@
 ﻿using System.Collections.Generic;
+using KOTF.Core.Gameplay.Character;
+using KOTF.Core.Gameplay.Equipment;
+using UnityEngine;
 
 namespace KOTF.Core.Services
 {
@@ -6,12 +9,21 @@ namespace KOTF.Core.Services
     {
         private HashSet<int> _registeredCollisionIds = new();
 
-        public void RegisterCollision(int blockedCollisionId)
+        public void RegisterCollisionBetween(Weapon aggressorWeapon, CharacterBase victim)
         {
-            _registeredCollisionIds.Add(blockedCollisionId);
+            int victimId = victim.GetInstanceID();
+            if (IsRegistered(victimId))
+                return;
+
+            _registeredCollisionIds.Add(victimId);
+
+            victim.HealthPoints -= aggressorWeapon.BaseDamage;
+            Debug.Log($"Hit {victim.gameObject.name}");
+            if (victim.HealthPoints <= 0)
+                victim.Die();
         }
 
-        public bool IsRegistered(int collisionId)
+        private bool IsRegistered(int collisionId)
         {
             return _registeredCollisionIds.Contains(collisionId);
         }

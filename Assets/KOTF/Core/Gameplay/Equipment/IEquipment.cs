@@ -11,6 +11,6 @@ namespace KOTF.Core.Gameplay.Equipment
     {
         string Name { get; }
         string Description { get; }
-        ICharacter Owner { get; set; }
+        CharacterBase Owner { get; set; }
     }
 }

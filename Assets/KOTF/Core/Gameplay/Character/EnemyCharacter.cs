@@ -8,16 +8,14 @@ using UnityEngine;
 
 namespace KOTF.Core.Gameplay.Character
 {
-    public class EnemyCharacter : MonoBehaviour, ICharacter
+    public class EnemyCharacter : CharacterBase
     {
-        public Weapon WieldedWeapon { get; set; }
-
-        public void Move()
+        public override void Move()
         {
             throw new NotImplementedException();
         }
 
-        public void Attack()
+        public override void Attack()
         {
             throw new NotImplementedException();
         }

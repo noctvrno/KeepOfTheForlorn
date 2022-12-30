@@ -17,8 +17,8 @@ namespace KOTF.Core.Gameplay.Character
 
         private void Start()
         {
-            if (!TryGetComponent<ICharacter>(out _))
-                Debug.LogError($"{gameObject.name} is not attached to an {nameof(ICharacter)}.");
+            if (!TryGetComponent<CharacterBase>(out _))
+                Debug.LogError($"{gameObject.name} is not attached to an {nameof(CharacterBase)}.");
         }
 
         private void Update()

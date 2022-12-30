@@ -11,12 +11,16 @@ namespace KOTF.Core.Gameplay.Equipment
 {
     public class Weapon : MonoBehaviour, IEquipment
     {
-        private Collider _collider;
         private CharacterColliderService _characterColliderService;
+        private Collider _collider;
         public Collider Collider => _collider;
         public string Name { get; set; }
         public string Description { get; set; }
-        public ICharacter Owner { get; set; }
+        public CharacterBase Owner { get; set; }
+
+        [SerializeField]
+        private int _baseDamage = 500;
+        public int BaseDamage => _baseDamage;
 
         private void Start()
         {
@@ -29,15 +33,10 @@ namespace KOTF.Core.Gameplay.Equipment
 
         private void OnCollisionEnter(Collision collision)
         {
-            if (!collision.gameObject.TryGetComponent(out ICharacter _))
+            if (!collision.gameObject.TryGetComponent(out CharacterBase victimCharacter))
                 return;
-
-            int collisionInstanceId = collision.gameObject.GetInstanceID();
-            if (_characterColliderService.IsRegistered(collisionInstanceId))
-                return;
-
-            _characterColliderService.RegisterCollision(collisionInstanceId);
-            Debug.Log($"Hit {collision.gameObject.name}");
+            
+            _characterColliderService.RegisterCollisionBetween(this, victimCharacter);
         }
     }
 }

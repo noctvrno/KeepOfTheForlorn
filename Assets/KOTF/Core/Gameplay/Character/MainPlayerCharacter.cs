@@ -12,7 +12,7 @@ using KOTF.Utils.StringConstants;
 
 namespace KOTF.Core.Gameplay.Character
 {
-    public class MainPlayerCharacter : MonoBehaviour, ICharacter
+    public class MainPlayerCharacter : CharacterBase
     {
         [Header("Movement")]
         [SerializeField] private float _movementSpeed = 10.0f;
@@ -23,8 +23,6 @@ namespace KOTF.Core.Gameplay.Character
         private ServiceProvider _serviceProvider;
         private EquipmentService _equipmentService;
         private CharacterColliderService _characterColliderService;
-
-        public Weapon WieldedWeapon { get; set; }
 
         private void Awake()
         {
@@ -63,7 +61,7 @@ namespace KOTF.Core.Gameplay.Character
             Attack();
         }
 
-        public void Move()
+        public override void Move()
         {
             // Read Input using new Input System.
             float longitudinalValue = _movementInput.Input.ReadValue<Vector3>().z;
@@ -78,9 +76,14 @@ namespace KOTF.Core.Gameplay.Character
             return (lateralValue * Vector3.right + longitudinalValue * Vector3.forward).ToDeltaTime() * _movementSpeed;
         }
 
-        public void Attack()
+        public override void Attack()
         {
             _animator.SetBool(AnimationConstants.ATTACK, Convert.ToBoolean(_attackInput.Input.ReadValue<float>()));
+        }
+
+        public override void Die()
+        {
+            throw new NotImplementedException();
         }
 
         public void OnEnterAttackWindow()

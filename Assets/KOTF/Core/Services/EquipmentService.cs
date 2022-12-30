@@ -58,7 +58,7 @@ namespace KOTF.Core.Services
             }
 
             // Casting to Weapon here is temporary as it is not sustainable.
-            if (attachmentGameObject is not Weapon weapon || !host.TryGetComponent(out ICharacter hostCharacter))
+            if (attachmentGameObject is not Weapon weapon || !host.TryGetComponent(out CharacterBase hostCharacter))
                 return;
 
             hostCharacter.WieldedWeapon = weapon;
