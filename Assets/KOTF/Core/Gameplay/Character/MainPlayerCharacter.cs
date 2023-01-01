@@ -19,6 +19,7 @@ namespace KOTF.Core.Gameplay.Character
         private InputHandler _movementInput;
         private InputHandler _attackInput;
         private Animator _animator;
+        private CharacterController _characterController;
 
         private ServiceProvider _serviceProvider;
         private EquipmentService _equipmentService;
@@ -42,6 +43,7 @@ namespace KOTF.Core.Gameplay.Character
         private void Start()
         {
             _animator = GetComponent<Animator>();
+            _characterController = GetComponent<CharacterController>();
 
             // Update the Animator to make sure that all references and properties are correct.
             _animator.runtimeAnimatorController = new AnimatorOverrideController(_animator.runtimeAnimatorController);
@@ -64,16 +66,18 @@ namespace KOTF.Core.Gameplay.Character
         public override void Move()
         {
             // Read Input using new Input System.
-            float longitudinalValue = _movementInput.Input.ReadValue<Vector3>().z;
-            float lateralValue = _movementInput.Input.ReadValue<Vector3>().x;
+            Vector3 inputMovement = _movementInput.Input.ReadValue<Vector3>();
+            float longitudinalValue = inputMovement.z;
+            float lateralValue = inputMovement.x;
 
             // Apply corresponding forces.
-            gameObject.transform.Translate(ComputeMovementVector(longitudinalValue, lateralValue));
+            Vector3 computedMovementVector = ComputeMovementVector(longitudinalValue, lateralValue);
+            _characterController.Move(new Vector3(computedMovementVector.x, 0.0f, computedMovementVector.z));
         }
 
         private Vector3 ComputeMovementVector(float longitudinalValue, float lateralValue)
         {
-            return (lateralValue * Vector3.right + longitudinalValue * Vector3.forward).ToDeltaTime() * _movementSpeed;
+            return (lateralValue * transform.right + longitudinalValue * transform.forward).ToDeltaTime() * _movementSpeed;
         }
 
         public override void Attack()
