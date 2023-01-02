@@ -52,14 +52,9 @@ namespace KOTF.Core.Gameplay.Character
             _characterColliderService = serviceProvider.Get<CharacterColliderService>();
         }
 
-        private void Update()
+        protected override void Update()
         {
-            ProcessInput();
-        }
-
-        private void ProcessInput()
-        {
-            Move();
+            base.Update();
             Attack();
         }
 
