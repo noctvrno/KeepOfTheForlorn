@@ -18,6 +18,11 @@ namespace KOTF.Core.Gameplay.Character
             set => _healthPoints = value;
         }
 
+        protected virtual void Update()
+        {
+            Move();
+        }
+
         public Weapon WieldedWeapon { get; set; }
         public abstract void Move();
         public abstract void Attack();
