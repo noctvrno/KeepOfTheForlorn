@@ -4,11 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using KOTF.Core.Gameplay.Equipment;
+using KOTF.Core.Wrappers;
 using UnityEngine;
 
 namespace KOTF.Core.Gameplay.Character
 {
-    public abstract class CharacterBase : MonoBehaviour
+    public abstract class CharacterBase : MonoBehaviourWrapper
     {
         [Header("Stats")]
         [SerializeField] private int _healthPoints = 1000;

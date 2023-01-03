@@ -3,37 +3,26 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using KOTF.Core.Gameplay.Equipment;
-using UnityEngine;
+using UnityEngine.AI;
 
 namespace KOTF.Core.Gameplay.Character
 {
     public class EnemyCharacter : CharacterBase
     {
-        #region Serializable fields
-        [SerializeField] private float _movementSpeed;
-        #endregion
-
         #region Object references
         private MainPlayerCharacter _mainPlayerCharacter;
+        private NavMeshAgent _navMeshAgent;
         #endregion
 
         private void Start()
         {
             _mainPlayerCharacter = FindObjectOfType<MainPlayerCharacter>();
-            if (_mainPlayerCharacter == null)
-                Debug.LogError($"Couldn't find object of type {nameof(MainPlayerCharacter)}");
+            _navMeshAgent = GetComponent<NavMeshAgent>();
         }
 
         public override void Move()
         {
-            Vector3 currentPosition = transform.position;
-            Vector3 targetPosition = _mainPlayerCharacter.transform.position;
-            Vector3 distanceToPlayer = currentPosition - targetPosition;
-
-            // Update angular and linear position properties.
-            transform.rotation = Quaternion.LookRotation(distanceToPlayer);
-            transform.position = Vector3.MoveTowards(currentPosition, targetPosition, _movementSpeed);
+            _navMeshAgent.SetDestination(_mainPlayerCharacter.transform.position);
         }
 
         public override void Attack()

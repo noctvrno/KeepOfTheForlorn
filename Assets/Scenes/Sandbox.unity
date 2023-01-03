@@ -2059,6 +2059,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1021079564368999502, guid: 140f75a22d99dea40ab7190628553ea4, type: 3}
+      propertyPath: _movementSpeed
+      value: 0.05
+      objectReference: {fileID: 0}
     - target: {fileID: 2195016408464887696, guid: 140f75a22d99dea40ab7190628553ea4, type: 3}
       propertyPath: m_IsKinematic
       value: 0
