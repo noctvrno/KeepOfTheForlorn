@@ -1,15 +1,9 @@
-﻿using KOTF.Core.Gameplay.Character;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine;
+﻿using UnityEngine;
 using Object = UnityEngine.Object;
 
 namespace KOTF.Core.Wrappers
 {
-    public class MonoBehaviourWrapper : MonoBehaviour
+    public class KotfGameObject : MonoBehaviour
     {
         public new T GetComponent<T>()
         {

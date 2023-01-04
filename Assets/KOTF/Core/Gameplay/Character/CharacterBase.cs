@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace KOTF.Core.Gameplay.Character
 {
-    public abstract class CharacterBase : MonoBehaviourWrapper
+    public abstract class CharacterBase : KotfGameObject
     {
         [Header("Stats")]
         [SerializeField] private int _healthPoints = 1000;
