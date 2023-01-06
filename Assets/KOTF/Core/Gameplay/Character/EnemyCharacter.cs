@@ -1,4 +1,5 @@
-﻿using System;
+﻿using KOTF.Utils.StringConstants;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -17,12 +18,14 @@ namespace KOTF.Core.Gameplay.Character
         #region Object references
         private MainPlayerCharacter _mainPlayerCharacter;
         private NavMeshAgent _navMeshAgent;
+        private Animator _animator;
         #endregion
 
         private void Start()
         {
             _mainPlayerCharacter = FindObjectOfType<MainPlayerCharacter>();
             _navMeshAgent = GetComponent<NavMeshAgent>();
+            _animator = GetComponent<Animator>();
         }
 
         public override void Move()
@@ -36,13 +39,23 @@ namespace KOTF.Core.Gameplay.Character
 
         public override void Attack()
         {
-
+            _animator.SetBool(AnimationConstants.ATTACK, true);
         }
 
         private void OnDrawGizmosSelected()
         {
             Gizmos.color = Color.red;
             Gizmos.DrawWireSphere(transform.position, _aggroRadius);
+        }
+
+        public void OnEnterAttackWindow()
+        {
+
+        }
+
+        public void OnExitAttackWindow()
+        {
+
         }
     }
 }
