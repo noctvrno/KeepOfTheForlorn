@@ -22,6 +22,7 @@ namespace KOTF.Core.Gameplay.Character
         protected virtual void Update()
         {
             Move();
+            Attack();
         }
 
         public Weapon WieldedWeapon { get; set; }
