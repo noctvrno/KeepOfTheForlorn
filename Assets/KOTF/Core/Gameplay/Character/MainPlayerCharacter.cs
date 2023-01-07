@@ -18,38 +18,34 @@ namespace KOTF.Core.Gameplay.Character
         [SerializeField] private float _movementSpeed = 10.0f;
         private InputHandler _movementInput;
         private InputHandler _attackInput;
-        private Animator _animator;
         private CharacterController _characterController;
 
-        private ServiceProvider _serviceProvider;
         private EquipmentService _equipmentService;
         private CharacterColliderService _characterColliderService;
 
-        private void Awake()
+        protected override void Awake()
         {
             new Initialization.Initializer().Initialize();
+            base.Awake();
 
             _movementInput = InputFactory.GetInput(InputActionType.Movement);
             _attackInput = InputFactory.GetInput(InputActionType.Attack);
             if (_movementInput == null)
                 Debug.LogError($"{_movementInput} is null which is not permitted!");
 
-            _serviceProvider = ServiceProvider.GetInstance();
-            _equipmentService = _serviceProvider.Get<EquipmentService>();
+            _equipmentService = ServiceProvider.Get<EquipmentService>();
+            _characterColliderService = ServiceProvider.Get<CharacterColliderService>();
 
             _equipmentService.AttachEquipmentTo<Weapon>(WeaponPrefabNames.LONGSWORD, gameObject);
         }
 
-        private void Start()
+        protected override void Start()
         {
-            _animator = GetComponent<Animator>();
+            base.Start();
             _characterController = GetComponent<CharacterController>();
 
             // Update the Animator to make sure that all references and properties are correct.
-            _animator.runtimeAnimatorController = new AnimatorOverrideController(_animator.runtimeAnimatorController);
-
-            var serviceProvider = ServiceProvider.GetInstance();
-            _characterColliderService = serviceProvider.Get<CharacterColliderService>();
+            Animator.runtimeAnimatorController = new AnimatorOverrideController(Animator.runtimeAnimatorController);
         }
 
         public override void Move()
@@ -71,7 +67,7 @@ namespace KOTF.Core.Gameplay.Character
 
         public override void Attack()
         {
-            _animator.SetBool(AnimationConstants.ATTACK, Convert.ToBoolean(_attackInput.Input.ReadValue<float>()));
+            TriggerAttackAnimation(Convert.ToBoolean(_attackInput.Input.ReadValue<float>()));
         }
 
         public override void Die()
@@ -79,12 +75,12 @@ namespace KOTF.Core.Gameplay.Character
             throw new NotImplementedException();
         }
 
-        public void OnEnterAttackWindow()
+        public override void OnEnterAttackWindow()
         {
             WieldedWeapon.Collider.enabled = true;
         }
 
-        public void OnExitAttackWindow()
+        public override void OnExitAttackWindow()
         {
             WieldedWeapon.Collider.enabled = false;
             _characterColliderService.Reset();
