@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using Object = UnityEngine.Object;
 
 namespace KOTF.Core.Wrappers
@@ -7,9 +8,18 @@ namespace KOTF.Core.Wrappers
     {
         public new T GetComponent<T>()
         {
-            T component = base.GetComponent<T>();
+            return ValidateComponent(base.GetComponent<T>());
+        }
+
+        public new T GetComponentInChildren<T>()
+        {
+            return ValidateComponent(base.GetComponentInChildren<T>());
+        }
+
+        private T ValidateComponent<T>(T component)
+        {
             if (component == null)
-                Debug.LogError($"Could not get {nameof(T)} from {name}.");
+                throw new ArgumentException($"Could not get {typeof(T).Name} from {name}.");
 
             return component;
         }
@@ -19,7 +29,7 @@ namespace KOTF.Core.Wrappers
         {
             T @object = Object.FindObjectOfType<T>();
             if (@object == null)
-                Debug.LogError($"Couldn't find object of type {nameof(T)} requested by {name}.");
+                throw new ArgumentException($"Couldn't find object of type {typeof(T).Name} requested by {name}.");
 
             return @object;
         }

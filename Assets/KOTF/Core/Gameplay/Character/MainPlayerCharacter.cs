@@ -21,7 +21,6 @@ namespace KOTF.Core.Gameplay.Character
         private CharacterController _characterController;
 
         private EquipmentService _equipmentService;
-        private CharacterColliderService _characterColliderService;
 
         protected override void Awake()
         {
@@ -34,7 +33,6 @@ namespace KOTF.Core.Gameplay.Character
                 Debug.LogError($"{_movementInput} is null which is not permitted!");
 
             _equipmentService = ServiceProvider.Get<EquipmentService>();
-            _characterColliderService = ServiceProvider.Get<CharacterColliderService>();
 
             _equipmentService.AttachEquipmentTo<Weapon>(WeaponPrefabNames.LONGSWORD, gameObject);
         }
@@ -68,22 +66,6 @@ namespace KOTF.Core.Gameplay.Character
         public override void Attack()
         {
             TriggerAttackAnimation(Convert.ToBoolean(_attackInput.Input.ReadValue<float>()));
-        }
-
-        public override void Die()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void OnEnterAttackWindow()
-        {
-            WieldedWeapon.Collider.enabled = true;
-        }
-
-        public override void OnExitAttackWindow()
-        {
-            WieldedWeapon.Collider.enabled = false;
-            _characterColliderService.Reset();
         }
     }
 }

@@ -23,21 +23,26 @@ namespace KOTF.Core.Gameplay.Character
         #endregion
 
         #region Objected references
+        private Weapon _wieldedWeapon;
         protected ServiceProvider ServiceProvider { get; private set; }
         protected AnimationService AnimationService { get; private set; }
+        protected CharacterColliderService CharacterColliderService { get; private set; }
         protected Animator Animator { get; private set; }
-        public Weapon WieldedWeapon { get; set; }
         #endregion
 
         protected virtual void Awake()
         {
             ServiceProvider = ServiceProvider.GetInstance();
             AnimationService = ServiceProvider.Get<AnimationService>();
+            CharacterColliderService = ServiceProvider.Get<CharacterColliderService>();
         }
 
         protected virtual void Start()
         {
             Animator = GetComponent<Animator>();
+
+            _wieldedWeapon = GetComponentInChildren<Weapon>();
+            _wieldedWeapon.Owner = this;
         }
 
         protected virtual void Update()
@@ -56,19 +61,19 @@ namespace KOTF.Core.Gameplay.Character
 
         public virtual void Die()
         {
-            Debug.Log($"{gameObject.name} has died.");
+            Debug.Log($"{name} has died.");
             Destroy(gameObject);
         }
 
         public virtual void OnEnterAttackWindow()
         {
-
+            _wieldedWeapon.Collider.enabled = true;
         }
 
         public virtual void OnExitAttackWindow()
         {
-
+            _wieldedWeapon.Collider.enabled = false;
+            CharacterColliderService.Reset();
         }
-
     }
 }
