@@ -18,7 +18,7 @@ namespace KOTF.Core.Services
             _registeredCollisionIds.Add(victimId);
 
             victim.HealthPoints -= aggressorWeapon.BaseDamage;
-            Debug.Log($"Hit {victim.gameObject.name}");
+            Debug.Log($"{aggressorWeapon.Owner.name} inflicted {aggressorWeapon.BaseDamage} base damage upon {victim.gameObject.name}.");
             if (victim.HealthPoints <= 0)
                 victim.Die();
         }

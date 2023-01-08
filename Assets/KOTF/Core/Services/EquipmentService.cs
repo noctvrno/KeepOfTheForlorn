@@ -61,8 +61,6 @@ namespace KOTF.Core.Services
             if (attachmentGameObject is not Weapon weapon || !host.TryGetComponent(out CharacterBase hostCharacter))
                 return;
 
-            hostCharacter.WieldedWeapon = weapon;
-            weapon.Owner = hostCharacter;
             weapon.name = key;
         }
     }
