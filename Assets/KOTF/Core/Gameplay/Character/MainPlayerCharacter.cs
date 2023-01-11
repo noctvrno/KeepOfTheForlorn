@@ -25,11 +25,8 @@ namespace KOTF.Core.Gameplay.Character
         protected override void Awake()
         {
             new Initialization.Initializer().Initialize();
-<<<<<<< Updated upstream
             base.Awake();
 
-=======
->>>>>>> Stashed changes
             _movementInput = InputFactory.GetInput(InputActionType.Movement);
             _attackInput = InputFactory.GetInput(InputActionType.Attack);
             if (_movementInput == null)
