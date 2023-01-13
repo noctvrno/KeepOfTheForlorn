@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,9 +16,23 @@ namespace KOTF.Core.Gameplay.Character
     public class MainPlayerCharacter : CharacterBase
     {
         [Header("Movement")]
-        [SerializeField] private float _movementSpeed = 10.0f;
+        [SerializeField]
+        [Tooltip("The movement speed value. This controls how fast the character walks.")]
+        private float _movementSpeed;
+        [SerializeField]
+        [Tooltip("The ratio of the movement speed while sprinting to walking. If the ratio is 2.0, that means that sprinting will be twice as fast as walking.")]
+        private float _sprintToMovementSpeedRatio;
+        [SerializeField]
+        [Tooltip("How fast the movement speed reaches the sprinting speed.")]
+        private float _acceleration;
+
+        // These fields should be readonly but Unity does not support their usage.
+        private float _minMovementSpeed;
+        private float _maxMovementSpeed;
+
         private InputHandler _movementInput;
         private InputHandler _attackInput;
+        private InputHandler _sprintInput;
         private CharacterController _characterController;
 
         private EquipmentService _equipmentService;
@@ -27,14 +42,20 @@ namespace KOTF.Core.Gameplay.Character
             new Initialization.Initializer().Initialize();
             base.Awake();
 
-            _movementInput = InputFactory.GetInput(InputActionType.Movement);
-            _attackInput = InputFactory.GetInput(InputActionType.Attack);
-            if (_movementInput == null)
-                Debug.LogError($"{_movementInput} is null which is not permitted!");
+            _minMovementSpeed = _movementSpeed;
+            _maxMovementSpeed = _sprintToMovementSpeedRatio * _movementSpeed;
 
+            InitializeInputs();
             _equipmentService = ServiceProvider.Get<EquipmentService>();
 
             _equipmentService.AttachEquipmentTo<Weapon>(WeaponPrefabNames.LONGSWORD, gameObject);
+        }
+
+        private void InitializeInputs()
+        {
+            _movementInput = InputFactory.GetInput(InputActionType.Movement);
+            _attackInput = InputFactory.GetInput(InputActionType.Attack);
+            _sprintInput = InputFactory.GetInput(InputActionType.Sprint);
         }
 
         protected override void Start()
@@ -56,6 +77,14 @@ namespace KOTF.Core.Gameplay.Character
             // Apply corresponding forces.
             Vector3 computedMovementVector = ComputeMovementVector(longitudinalValue, lateralValue);
             _characterController.Move(new Vector3(computedMovementVector.x, 0.0f, computedMovementVector.z));
+        }
+
+        protected override void FixedUpdate()
+        {
+            base.FixedUpdate();
+            _movementSpeed = _movementSpeed.AlterWithinRangeTol(_minMovementSpeed, _maxMovementSpeed, _acceleration,
+                Convert.ToBoolean(_sprintInput.Input.ReadValue<float>()));
+            //Debug.Log($"Movement speed: {_movementSpeed}");
         }
 
         private Vector3 ComputeMovementVector(float longitudinalValue, float lateralValue)

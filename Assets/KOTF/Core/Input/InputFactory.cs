@@ -11,6 +11,7 @@ namespace KOTF.Core.Input
     public enum InputActionType
     {
         Movement,
+        Sprint,
         Attack
     }
 
@@ -36,6 +37,9 @@ namespace KOTF.Core.Input
                     case InputActionType.Attack:
                         inputHandler.Input.AddBinding($"{GetMouseBinding("leftButton")}");
                         break;
+                    case InputActionType.Sprint:
+                        inputHandler.Input.AddBinding($"{GetKeyboardBinding("leftshift")}");
+                        break;
                 }
 
                 inputHandler.OnEnable();
@@ -43,12 +47,12 @@ namespace KOTF.Core.Input
             }
         }
 
-        private static String GetKeyboardBinding(String key)
+        private static string GetKeyboardBinding(string key)
         {
             return $"<Keyboard>/{key}";
         }
 
-        private static String GetMouseBinding(String key)
+        private static string GetMouseBinding(string key)
         {
             return $"<Mouse>/{key}";
         }
@@ -56,7 +60,7 @@ namespace KOTF.Core.Input
         public static InputHandler GetInput(InputActionType actionType)
         {
             if (!_inputTypeToHandler.TryGetValue(actionType, out var inputHandler))
-                return null;
+                throw new ArgumentException($"Could not retrieve action of type {actionType}.");
 
             return inputHandler;
         }

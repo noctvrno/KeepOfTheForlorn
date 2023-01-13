@@ -51,6 +51,11 @@ namespace KOTF.Core.Gameplay.Character
             Attack();
         }
 
+        protected virtual void FixedUpdate()
+        {
+
+        }
+
         protected void TriggerAttackAnimation(bool value)
         {
             AnimationService.TriggerAttackAnimation(Animator, value);
