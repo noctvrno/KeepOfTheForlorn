@@ -23,11 +23,11 @@ namespace KOTF.Core.Gameplay.Character
         #endregion
 
         #region Objected references
-        private Weapon _wieldedWeapon;
+        public Weapon WieldedWeapon { get; private set; }
         protected ServiceProvider ServiceProvider { get; private set; }
         protected AnimationService AnimationService { get; private set; }
         protected CharacterColliderService CharacterColliderService { get; private set; }
-        protected Animator Animator { get; private set; }
+        public Animator Animator { get; private set; }
         #endregion
 
         protected virtual void Awake()
@@ -41,8 +41,8 @@ namespace KOTF.Core.Gameplay.Character
         {
             Animator = GetComponent<Animator>();
 
-            _wieldedWeapon = GetComponentInChildren<Weapon>();
-            _wieldedWeapon.Owner = this;
+            WieldedWeapon = GetComponentInChildren<Weapon>();
+            WieldedWeapon.Owner = this;
         }
 
         protected virtual void Update()
@@ -72,12 +72,12 @@ namespace KOTF.Core.Gameplay.Character
 
         public virtual void OnEnterAttackWindow()
         {
-            _wieldedWeapon.Collider.enabled = true;
+            WieldedWeapon.Collider.enabled = true;
         }
 
         public virtual void OnExitAttackWindow()
         {
-            _wieldedWeapon.Collider.enabled = false;
+            WieldedWeapon.Collider.enabled = false;
             CharacterColliderService.Reset();
         }
     }
