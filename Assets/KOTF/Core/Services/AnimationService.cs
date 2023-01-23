@@ -10,6 +10,9 @@ using UnityEngine;
 
 namespace KOTF.Core.Services
 {
+    /// <summary>
+    /// The AnimationService contains useful actions that pertain to specific or general animations (Idle, Walk, Attack, Chain Attack etc.)
+    /// </summary>
     public class AnimationService : IService
     {
         private const string IS_ATTACKING = "IsAttacking";
@@ -19,6 +22,11 @@ namespace KOTF.Core.Services
 
         public void ValidateAnimator(CharacterBase host)
         {
+            ValidateAttackAnimator(host);
+        }
+
+        private void ValidateAttackAnimator(CharacterBase host)
+        {
             AnimatorController controller =
                 AssetDatabase.LoadAssetAtPath<AnimatorController>(
                     AssetDatabase.GetAssetPath(host.Animator.runtimeAnimatorController));
@@ -26,11 +34,11 @@ namespace KOTF.Core.Services
             if (controller == null)
                 Debug.LogWarning("Could not find an associated AnimatorController for the host.");
 
-            ValidateAnimationParameters(host, controller);
-            ValidateTransitionConditions(controller);
+            ValidateAttackAnimationParameters(host, controller);
+            ValidateAttackAnimationTransitionConditions(controller);
         }
 
-        private void ValidateAnimationParameters(CharacterBase host, AnimatorController animatorController)
+        private void ValidateAttackAnimationParameters(CharacterBase host, AnimatorController animatorController)
         {
             HashSet<string> parameterNames = animatorController.parameters.Select(x => x.name).ToHashSet();
 
@@ -55,7 +63,7 @@ namespace KOTF.Core.Services
             }
         }
 
-        private void ValidateTransitionConditions(AnimatorController animatorController)
+        private void ValidateAttackAnimationTransitionConditions(AnimatorController animatorController)
         {
             if (_chainAttackParameters.Count == 0)
                 return;
