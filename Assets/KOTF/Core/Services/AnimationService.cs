@@ -1,8 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using KOTF.Core.Gameplay.Character;
 using KOTF.Utils.Path;
+using UnityEditor;
+using UnityEditor.Animations;
 using UnityEngine;
 
 namespace KOTF.Core.Services
@@ -12,23 +15,29 @@ namespace KOTF.Core.Services
         private const string IS_ATTACKING = "IsAttacking";
         private readonly int _isAttackingHash = Animator.StringToHash(IS_ATTACKING);
 
-        private const string CHAIN = "Chain";
+        private HashSet<string> _chainAttackParameters = new();
 
-        public void InitializeDynamics(CharacterBase host)
+        public void ValidateAnimator(CharacterBase host)
         {
-            InitializeAnimatorParameters(host);
-            InitializeAnimationTransitionConditions(host);
+            AnimatorController controller =
+                AssetDatabase.LoadAssetAtPath<AnimatorController>(
+                    AssetDatabase.GetAssetPath(host.Animator.runtimeAnimatorController));
+
+            if (controller == null)
+                Debug.LogWarning("Could not find an associated AnimatorController for the host.");
+
+            ValidateAnimationParameters(host, controller);
+            ValidateTransitionConditions(controller);
         }
 
-        private void InitializeAnimatorParameters(CharacterBase host)
+        private void ValidateAnimationParameters(CharacterBase host, AnimatorController animatorController)
         {
+            HashSet<string> parameterNames = animatorController.parameters.Select(x => x.name).ToHashSet();
 
-        }
+            // We need to get all weapons instead.
+            var animations = new LinkedList<AnimationClip>(
+                Resources.LoadAll<AnimationClip>(Path.Combine(PathUtils.WEAPON_ANIMATIONS, host.WieldedWeapon.name)));
 
-        private void InitializeAnimationTransitionConditions(CharacterBase host)
-        {
-            // We need to get all weapons instead. We must replace before final commit.
-            var animations = new LinkedList<AnimationClip>(Resources.LoadAll<AnimationClip>(Path.Combine(PathUtils.WEAPON_ANIMATIONS, host.WieldedWeapon.Name)));
             if (animations.Any() != true)
                 return;
 
@@ -36,10 +45,53 @@ namespace KOTF.Core.Services
             while (animationNode?.Next != null)
             {
                 // Get all attack transitions and apply the conditions.
-                string parameterName = $"{CHAIN}_{animationNode.Value.name}_{animationNode.Next.Value.name}";
+                string parameterName = $"{animationNode.Value.name}_{animationNode.Next.Value.name}";
+                _chainAttackParameters.Add(parameterName);
+                if (parameterNames.Contains(parameterName))
+                    return;
 
+                animatorController.AddParameter(parameterName, AnimatorControllerParameterType.Trigger);
                 animationNode = animationNode.Next;
             }
+        }
+
+        private void ValidateTransitionConditions(AnimatorController animatorController)
+        {
+            if (_chainAttackParameters.Count == 0)
+                return;
+
+            var transitions = animatorController.layers
+                .SelectMany(x => x.stateMachine.states)
+                .SelectMany(x => x.state.transitions)
+                .ToList();
+
+            foreach (string chainAttackParameter in _chainAttackParameters)
+            {
+                string destinationState = GetDestinationState(chainAttackParameter);
+                if (string.IsNullOrEmpty(destinationState))
+                    continue;
+
+                AnimatorStateTransition transition = transitions.FirstOrDefault(x => x.destinationState.name.Equals(destinationState));
+                if (transition == null)
+                    continue;
+
+                AddTriggerConditionToTransition(transition, chainAttackParameter);
+            }
+        }
+
+        private void AddTriggerConditionToTransition(AnimatorTransitionBase transition, string chainAttackParameter)
+        {
+            if (transition.conditions.Any(x => _chainAttackParameters.Contains(x.parameter)))
+                return;
+
+            transition.AddCondition(AnimatorConditionMode.If, 0.0f, chainAttackParameter);
+        }
+
+        private string GetDestinationState(string chain)
+        {
+            Regex regex = new Regex("[^_]*$");
+            MatchCollection matches = regex.Matches(chain);
+            return matches.Count == 0 ? string.Empty : matches[0].Value;
         }
 
         public void TriggerAttackAnimation(Animator animator, bool value)

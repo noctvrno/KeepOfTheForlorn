@@ -62,7 +62,7 @@ namespace KOTF.Core.Gameplay.Character
         {
             base.Start();
 
-            AnimationService.InitializeDynamics(this);
+            AnimationService.ValidateAnimator(this);
 
             _characterController = GetComponent<CharacterController>();
 
