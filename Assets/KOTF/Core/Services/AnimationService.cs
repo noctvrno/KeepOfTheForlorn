@@ -67,7 +67,7 @@ namespace KOTF.Core.Services
 
             foreach (string chainAttackParameter in _chainAttackParameters)
             {
-                string destinationState = GetDestinationState(chainAttackParameter);
+                string destinationState = GetDestinationStateFromTransitionName(chainAttackParameter);
                 if (string.IsNullOrEmpty(destinationState))
                     continue;
 
@@ -87,10 +87,10 @@ namespace KOTF.Core.Services
             transition.AddCondition(AnimatorConditionMode.If, 0.0f, chainAttackParameter);
         }
 
-        private string GetDestinationState(string chain)
+        private string GetDestinationStateFromTransitionName(string transitionName)
         {
             Regex regex = new Regex("[^_]*$");
-            MatchCollection matches = regex.Matches(chain);
+            MatchCollection matches = regex.Matches(transitionName);
             return matches.Count == 0 ? string.Empty : matches[0].Value;
         }
 
