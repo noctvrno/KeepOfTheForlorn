@@ -61,6 +61,9 @@ namespace KOTF.Core.Gameplay.Character
         protected override void Start()
         {
             base.Start();
+
+            AnimationService.ValidateAnimator(this);
+
             _characterController = GetComponent<CharacterController>();
 
             // Update the Animator to make sure that all references and properties are correct.
