@@ -37,6 +37,8 @@ namespace KOTF.Core.Gameplay.Character
 
         private EquipmentService _equipmentService;
 
+        private ChainAttackHandler _chainAttackHandler;
+
         protected override void Awake()
         {
             new Initialization.Initializer().Initialize();
@@ -65,6 +67,7 @@ namespace KOTF.Core.Gameplay.Character
             AnimationService.ValidateAnimator(this);
 
             _characterController = GetComponent<CharacterController>();
+            _chainAttackHandler = new(WieldedWeapon.ChainAttackFrame);
 
             // Update the Animator to make sure that all references and properties are correct.
             Animator.runtimeAnimatorController = new AnimatorOverrideController(Animator.runtimeAnimatorController);
@@ -88,6 +91,12 @@ namespace KOTF.Core.Gameplay.Character
             _movementSpeed = _movementSpeed.AlterWithinRangeTol(_minMovementSpeed, _maxMovementSpeed, _acceleration,
                 Convert.ToBoolean(_sprintInput.Input.ReadValue<float>()));
             //Debug.Log($"Movement speed: {_movementSpeed}");
+        }
+
+        public override void OnExitAttackWindow()
+        {
+            base.OnExitAttackWindow();
+            StartCoroutine(_chainAttackHandler.ChainCoroutine());
         }
 
         private Vector3 ComputeMovementVector(float longitudinalValue, float lateralValue)

@@ -5,11 +5,12 @@ using System.Text;
 using System.Threading.Tasks;
 using KOTF.Core.Gameplay.Character;
 using KOTF.Core.Services;
+using KOTF.Core.Wrappers;
 using UnityEngine;
 
 namespace KOTF.Core.Gameplay.Equipment
 {
-    public class Weapon : MonoBehaviour, IEquipment
+    public class Weapon : KotfGameObject, IEquipment
     {
         private CharacterColliderService _characterColliderService;
         private Collider _collider;
@@ -18,9 +19,12 @@ namespace KOTF.Core.Gameplay.Equipment
         public string Description { get; set; }
         public CharacterBase Owner { get; set; }
 
-        [SerializeField]
-        private int _baseDamage = 500;
+        [Header("Stats")]
+        [SerializeField] private int _baseDamage = 500;
         public int BaseDamage => _baseDamage;
+
+        [SerializeField] private int _chainAttackFrame;
+        public int ChainAttackFrame => _chainAttackFrame;
 
         private void Start()
         {
