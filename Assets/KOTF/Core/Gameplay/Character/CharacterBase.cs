@@ -56,11 +56,6 @@ namespace KOTF.Core.Gameplay.Character
 
         }
 
-        protected void TriggerAttackAnimation(bool value)
-        {
-            AnimationService.TriggerAttackAnimation(Animator, value);
-        }
-
         public abstract void Move();
         public abstract void Attack();
 

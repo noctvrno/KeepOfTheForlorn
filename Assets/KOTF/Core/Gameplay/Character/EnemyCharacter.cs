@@ -38,7 +38,7 @@ namespace KOTF.Core.Gameplay.Character
 
         public override void Attack()
         {
-            TriggerAttackAnimation(true);
+            //TriggerAttackAnimation(true);
         }
 
         private void OnDrawGizmosSelected()

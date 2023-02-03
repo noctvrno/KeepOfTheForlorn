@@ -15,10 +15,12 @@ namespace KOTF.Core.Services
     /// </summary>
     public class AnimationService : IService
     {
-        private const string IS_ATTACKING = "IsAttacking";
-        private readonly int _isAttackingHash = Animator.StringToHash(IS_ATTACKING);
+        private const string DEFAULT_ATTACK = "Attack0";
 
-        private HashSet<string> _chainAttackParameters = new();
+        private readonly List<string> _chainAttackParameters = new()
+        {
+            DEFAULT_ATTACK
+        };
 
         public void ValidateAnimator(CharacterBase host)
         {
@@ -102,9 +104,9 @@ namespace KOTF.Core.Services
             return matches.Count == 0 ? string.Empty : matches[0].Value;
         }
 
-        public void TriggerAttackAnimation(Animator animator, bool value)
+        public void TriggerAttackAnimation(Animator animator)
         {
-            animator.SetBool(_isAttackingHash, value);
+
         }
     }
 }

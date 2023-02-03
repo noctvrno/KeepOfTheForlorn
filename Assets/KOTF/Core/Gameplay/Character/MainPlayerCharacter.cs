@@ -67,7 +67,7 @@ namespace KOTF.Core.Gameplay.Character
             AnimationService.ValidateAnimator(this);
 
             _characterController = GetComponent<CharacterController>();
-            _chainAttackHandler = new(WieldedWeapon.ChainAttackFrame);
+            _chainAttackHandler = new(AnimationService, WieldedWeapon.ChainAttackFrame);
 
             // Update the Animator to make sure that all references and properties are correct.
             Animator.runtimeAnimatorController = new AnimatorOverrideController(Animator.runtimeAnimatorController);
@@ -96,7 +96,7 @@ namespace KOTF.Core.Gameplay.Character
         public override void OnExitAttackWindow()
         {
             base.OnExitAttackWindow();
-            StartCoroutine(_chainAttackHandler.ChainCoroutine());
+            StartCoroutine(_chainAttackHandler.RegisterChainPossibilityCoroutine());
         }
 
         private Vector3 ComputeMovementVector(float longitudinalValue, float lateralValue)
@@ -106,7 +106,10 @@ namespace KOTF.Core.Gameplay.Character
 
         public override void Attack()
         {
-            TriggerAttackAnimation(Convert.ToBoolean(_attackInput.Input.ReadValue<float>()));
+            if(!Convert.ToBoolean(_attackInput.Input.ReadValue<float>()))
+                return;
+
+            _chainAttackHandler.Chain(Animator);
         }
     }
 }
