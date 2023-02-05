@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 namespace KOTF.Core.Input
 {
-    public enum InputActionType
+    public enum ActionType
     {
         Movement,
         Sprint,
@@ -17,27 +14,27 @@ namespace KOTF.Core.Input
 
     public static class InputFactory
     {
-        private static Dictionary<InputActionType, InputHandler> _inputTypeToHandler = new();
+        private static Dictionary<ActionType, InputHandler> _inputTypeToHandler = new();
 
         public static void Create()
         {
-            foreach (InputActionType actionType in Enum.GetValues(typeof(InputActionType)))
+            foreach (ActionType actionType in Enum.GetValues(typeof(ActionType)))
             {
                 InputHandler inputHandler = ScriptableObject.CreateInstance<InputHandler>();
                 inputHandler.Input = new();
                 switch (actionType)
                 {
-                    case InputActionType.Movement:
+                    case ActionType.Movement:
                         inputHandler.Input.AddCompositeBinding("3DVector")
                             .With("Forward", GetKeyboardBinding("w"))
                             .With("Backward", GetKeyboardBinding("s"))
                             .With("Left", GetKeyboardBinding("a"))
                             .With("Right", GetKeyboardBinding("d"));
                         break;
-                    case InputActionType.Attack:
+                    case ActionType.Attack:
                         inputHandler.Input.AddBinding($"{GetMouseBinding("leftButton")}");
                         break;
-                    case InputActionType.Sprint:
+                    case ActionType.Sprint:
                         inputHandler.Input.AddBinding($"{GetKeyboardBinding("leftshift")}");
                         break;
                 }
@@ -57,7 +54,7 @@ namespace KOTF.Core.Input
             return $"<Mouse>/{key}";
         }
 
-        public static InputHandler GetInput(InputActionType actionType)
+        public static InputHandler GetInput(ActionType actionType)
         {
             if (!_inputTypeToHandler.TryGetValue(actionType, out var inputHandler))
                 throw new ArgumentException($"Could not retrieve action of type {actionType}.");
