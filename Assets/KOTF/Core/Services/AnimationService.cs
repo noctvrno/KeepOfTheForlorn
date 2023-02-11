@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using KOTF.Core.Gameplay.Character;
+using KOTF.Core.Input;
 using UnityEditor;
 using UnityEditor.Animations;
 using UnityEngine;
@@ -9,7 +11,8 @@ namespace KOTF.Core.Services
 {
     public class AnimationService : IService
     {
-        private HashSet<string> _parameterNames = new();
+        private readonly Array _actionTypes = Enum.GetValues(typeof(ActionType));
+        private Dictionary<ActionType, List<string>> _actionTypeToParameterNames = new();
 
         public void ValidateAnimator(CharacterBase host)
         {
@@ -23,8 +26,45 @@ namespace KOTF.Core.Services
                 return;
             }
 
-            _parameterNames = controller.parameters.Select(x => x.name).ToHashSet();
+            InitializeAnimatorParameters(controller);
             ValidateTransitionConditions(controller);
+        }
+
+        private void InitializeAnimatorParameters(AnimatorController controller)
+        {
+            foreach (var parameter in controller.parameters.OrderBy(x => x.name).Select(x => x.name))
+            {
+                TryAddAnimatorParameter(parameter);
+            }
+        }
+
+        private bool TryAddAnimatorParameter(string parameter)
+        {
+            ActionType actionType = ParseParameterToActionType(parameter);
+
+            if (!_actionTypeToParameterNames.TryGetValue(actionType, out var value))
+            {
+                _actionTypeToParameterNames.Add(actionType, new List<string> { parameter });
+                return true;
+            }
+
+            if (value.Exists(x => x.Equals(parameter)))
+                return false;
+
+            value.Add(parameter);
+            return true;
+        }
+
+        private ActionType ParseParameterToActionType(string parameter)
+        {
+            foreach (object actionTypeValue in _actionTypes)
+            {
+                string actionTypeStr = actionTypeValue.ToString();
+                if (parameter.Contains(actionTypeStr) && Enum.TryParse(actionTypeStr, out ActionType actionType))
+                    return actionType;
+            }
+
+            throw new ArgumentException($"Could not parse {parameter} to {nameof(ActionType)}");
         }
 
         private void ValidateTransitionConditions(AnimatorController controller)
@@ -42,7 +82,7 @@ namespace KOTF.Core.Services
 
         private void AddTriggerParameter(AnimatorController controller, AnimatorTransitionBase transition)
         {
-            if (_parameterNames.Contains(transition.destinationState.name))
+            if (!TryAddAnimatorParameter(transition.destinationState.name))
                 return;
 
             controller.AddParameter(transition.destinationState.name, AnimatorControllerParameterType.Trigger);
@@ -50,7 +90,7 @@ namespace KOTF.Core.Services
 
         private void AddTriggerConditionToTransition(AnimatorTransitionBase transition)
         {
-            if (transition.conditions.Any(x => _parameterNames.Contains(x.parameter)))
+            if (transition.conditions.Any(x => _actionTypeToParameterNames.SelectMany(x => x.Value).Contains(x.parameter)))
                 return;
 
             transition.AddCondition(AnimatorConditionMode.If, 0.0f, transition.destinationState.name);
