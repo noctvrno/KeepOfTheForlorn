@@ -7,6 +7,7 @@ namespace KOTF.Core.Input
 {
     public enum ActionType
     {
+        Idle,
         Movement,
         Sprint,
         Attack
