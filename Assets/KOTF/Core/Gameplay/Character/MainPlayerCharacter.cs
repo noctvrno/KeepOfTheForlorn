@@ -55,9 +55,9 @@ namespace KOTF.Core.Gameplay.Character
 
         private void InitializeInputs()
         {
-            _movementInput = InputFactory.GetInput(InputActionType.Movement);
-            _attackInput = InputFactory.GetInput(InputActionType.Attack);
-            _sprintInput = InputFactory.GetInput(InputActionType.Sprint);
+            _movementInput = InputFactory.GetInput(ActionType.Movement);
+            _attackInput = InputFactory.GetInput(ActionType.Attack);
+            _sprintInput = InputFactory.GetInput(ActionType.Sprint);
         }
 
         protected override void Start()

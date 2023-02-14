@@ -1,9 +1,8 @@
-﻿using System.Collections.Generic;
-using System.IO;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using KOTF.Core.Gameplay.Character;
-using KOTF.Utils.Path;
+using KOTF.Core.Input;
 using UnityEditor;
 using UnityEditor.Animations;
 using UnityEngine;
@@ -15,12 +14,8 @@ namespace KOTF.Core.Services
     /// </summary>
     public class AnimationService : IService
     {
-        private const string DEFAULT_ATTACK = "Attack0";
-
-        private readonly List<string> _chainAttackParameters = new()
-        {
-            DEFAULT_ATTACK
-        };
+        private readonly Array _actionTypes = Enum.GetValues(typeof(ActionType));
+        private Dictionary<ActionType, List<string>> _actionTypeToParameterNames = new();
 
         public void ValidateAnimator(CharacterBase host)
         {
@@ -34,74 +29,79 @@ namespace KOTF.Core.Services
                     AssetDatabase.GetAssetPath(host.Animator.runtimeAnimatorController));
 
             if (controller == null)
-                Debug.LogWarning("Could not find an associated AnimatorController for the host.");
+            {
+                Debug.LogError("Could not find an associated AnimatorController for the host.");
+                return;
+            }
 
-            ValidateAttackAnimationParameters(host, controller);
-            ValidateAttackAnimationTransitionConditions(controller);
+            InitializeAnimatorParameters(controller);
+            ValidateTransitionConditions(controller);
         }
 
-        private void ValidateAttackAnimationParameters(CharacterBase host, AnimatorController animatorController)
+        private void InitializeAnimatorParameters(AnimatorController controller)
         {
-            HashSet<string> parameterNames = animatorController.parameters.Select(x => x.name).ToHashSet();
-
-            // We need to get all weapons instead.
-            var animations = new LinkedList<AnimationClip>(
-                Resources.LoadAll<AnimationClip>(Path.Combine(PathUtils.WEAPON_ANIMATIONS, host.WieldedWeapon.name)));
-
-            if (animations.Any() != true)
-                return;
-
-            LinkedListNode<AnimationClip> animationNode = animations.First;
-            while (animationNode?.Next != null)
+            foreach (var parameter in controller.parameters.OrderBy(x => x.name).Select(x => x.name))
             {
-                // Get all attack transitions and apply the conditions.
-                string parameterName = $"{animationNode.Value.name}_{animationNode.Next.Value.name}";
-                _chainAttackParameters.Add(parameterName);
-                if (parameterNames.Contains(parameterName))
-                    return;
-
-                animatorController.AddParameter(parameterName, AnimatorControllerParameterType.Trigger);
-                animationNode = animationNode.Next;
+                TryAddAnimatorParameter(parameter);
             }
         }
 
-        private void ValidateAttackAnimationTransitionConditions(AnimatorController animatorController)
+        private bool TryAddAnimatorParameter(string parameter)
         {
-            if (_chainAttackParameters.Count == 0)
-                return;
+            ActionType actionType = ParseParameterToActionType(parameter);
 
-            var transitions = animatorController.layers
+            if (!_actionTypeToParameterNames.TryGetValue(actionType, out var value))
+            {
+                _actionTypeToParameterNames.Add(actionType, new List<string> { parameter });
+                return true;
+            }
+
+            if (value.Exists(x => x.Equals(parameter)))
+                return false;
+
+            value.Add(parameter);
+            return true;
+        }
+
+        private ActionType ParseParameterToActionType(string parameter)
+        {
+            foreach (object actionTypeValue in _actionTypes)
+            {
+                string actionTypeStr = actionTypeValue.ToString();
+                if (parameter.Contains(actionTypeStr) && Enum.TryParse(actionTypeStr, out ActionType actionType))
+                    return actionType;
+            }
+
+            throw new ArgumentException($"Could not parse {parameter} to {nameof(ActionType)}");
+        }
+
+        private void ValidateTransitionConditions(AnimatorController controller)
+        {
+            var transitions = controller.layers
                 .SelectMany(x => x.stateMachine.states)
-                .SelectMany(x => x.state.transitions)
-                .ToList();
+                .SelectMany(x => x.state.transitions);
 
-            foreach (string chainAttackParameter in _chainAttackParameters)
+            foreach (var transition in transitions)
             {
-                string destinationState = GetDestinationStateFromTransitionName(chainAttackParameter);
-                if (string.IsNullOrEmpty(destinationState))
-                    continue;
-
-                AnimatorStateTransition transition = transitions.FirstOrDefault(x => x.destinationState.name.Equals(destinationState));
-                if (transition == null)
-                    continue;
-
-                AddTriggerConditionToTransition(transition, chainAttackParameter);
+                AddTriggerParameter(controller, transition);
+                AddTriggerConditionToTransition(transition);
             }
         }
 
-        private void AddTriggerConditionToTransition(AnimatorTransitionBase transition, string chainAttackParameter)
+        private void AddTriggerParameter(AnimatorController controller, AnimatorTransitionBase transition)
         {
-            if (transition.conditions.Any(x => _chainAttackParameters.Contains(x.parameter)))
+            if (!TryAddAnimatorParameter(transition.destinationState.name))
                 return;
 
-            transition.AddCondition(AnimatorConditionMode.If, 0.0f, chainAttackParameter);
+            controller.AddParameter(transition.destinationState.name, AnimatorControllerParameterType.Trigger);
         }
 
-        private string GetDestinationStateFromTransitionName(string transitionName)
+        private void AddTriggerConditionToTransition(AnimatorTransitionBase transition)
         {
-            Regex regex = new Regex("[^_]*$");
-            MatchCollection matches = regex.Matches(transitionName);
-            return matches.Count == 0 ? string.Empty : matches[0].Value;
+            if (transition.conditions.Any(x => _actionTypeToParameterNames.SelectMany(x => x.Value).Contains(x.parameter)))
+                return;
+
+            transition.AddCondition(AnimatorConditionMode.If, 0.0f, transition.destinationState.name);
         }
 
         public void TriggerAttackAnimation(Animator animator)
