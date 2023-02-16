@@ -14,6 +14,7 @@ namespace KOTF.Core.Services
     /// </summary>
     public class AnimationService : IService
     {
+        private Animator _animator;
         private readonly Array _actionTypes = Enum.GetValues(typeof(ActionType));
         private Dictionary<ActionType, List<string>> _actionTypeToParameterNames = new();
 
@@ -24,9 +25,10 @@ namespace KOTF.Core.Services
 
         private void ValidateAttackAnimator(CharacterBase host)
         {
+            _animator = host.Animator;
             AnimatorController controller =
                 AssetDatabase.LoadAssetAtPath<AnimatorController>(
-                    AssetDatabase.GetAssetPath(host.Animator.runtimeAnimatorController));
+                    AssetDatabase.GetAssetPath(_animator.runtimeAnimatorController));
 
             if (controller == null)
             {
@@ -104,9 +106,15 @@ namespace KOTF.Core.Services
             transition.AddCondition(AnimatorConditionMode.If, 0.0f, transition.destinationState.name);
         }
 
-        public void TriggerAttackAnimation(Animator animator)
+        public void TriggerAnimation(ActionType actionType, int animationParameterIndex = 0)
         {
+            if (!_actionTypeToParameterNames.TryGetValue(actionType, out List<string> parameters))
+            {
+                Debug.LogError($"Could not find {actionType} among {nameof(_actionTypeToParameterNames)}");
+                return;
+            }
 
+            _animator.SetTrigger(parameters[animationParameterIndex % parameters.Count]);
         }
     }
 }

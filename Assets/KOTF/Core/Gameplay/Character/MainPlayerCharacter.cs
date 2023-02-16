@@ -67,7 +67,7 @@ namespace KOTF.Core.Gameplay.Character
             AnimationService.ValidateAnimator(this);
 
             _characterController = GetComponent<CharacterController>();
-            _chainAttackHandler = new(AnimationService, WieldedWeapon.ChainAttackFrame);
+            _chainAttackHandler = new ChainAttackHandler(AnimationService, WieldedWeapon.ChainAttackFrame);
 
             // Update the Animator to make sure that all references and properties are correct.
             Animator.runtimeAnimatorController = new AnimatorOverrideController(Animator.runtimeAnimatorController);
@@ -106,10 +106,11 @@ namespace KOTF.Core.Gameplay.Character
 
         public override void Attack()
         {
-            if(!Convert.ToBoolean(_attackInput.Input.ReadValue<float>()))
+            Debug.Log($"Chainable: {_chainAttackHandler.Chainable}");
+            if (!Convert.ToBoolean(_attackInput.Input.ReadValue<float>()) || !_chainAttackHandler.Chainable)
                 return;
 
-            _chainAttackHandler.Chain(Animator);
+            _chainAttackHandler.Chain();
         }
     }
 }
