@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using KOTF.Core.Gameplay.Character;
 using KOTF.Core.Input;
-using UnityEditor;
+using KOTF.Core.Wrappers;
 using UnityEditor.Animations;
 using UnityEngine;
 
@@ -14,9 +14,9 @@ namespace KOTF.Core.Services
     /// </summary>
     public class AnimationService : IService
     {
-        private Animator _animator;
+        private CharacterBase _host;
         private readonly Array _actionTypes = Enum.GetValues(typeof(ActionType));
-        private Dictionary<ActionType, List<string>> _actionTypeToParameterNames = new();
+        private Dictionary<ActionType, List<KotfAnimationClip>> _actionTypeToAnimationClips = new();
 
         public void ValidateAnimator(CharacterBase host)
         {
@@ -25,43 +25,36 @@ namespace KOTF.Core.Services
 
         private void ValidateAttackAnimator(CharacterBase host)
         {
-            _animator = host.Animator;
-            AnimatorController controller =
-                AssetDatabase.LoadAssetAtPath<AnimatorController>(
-                    AssetDatabase.GetAssetPath(_animator.runtimeAnimatorController));
+            _host = host;
 
-            if (controller == null)
-            {
-                Debug.LogError("Could not find an associated AnimatorController for the host.");
-                return;
-            }
-
-            InitializeAnimatorParameters(controller);
-            ValidateTransitionConditions(controller);
+            InitializeAnimationClips();
+            ValidateTransitionConditions();
         }
 
-        private void InitializeAnimatorParameters(AnimatorController controller)
+        private void InitializeAnimationClips()
         {
-            foreach (var parameter in controller.parameters.OrderBy(x => x.name).Select(x => x.name))
+            foreach (var parameter in _host.AnimatorController.parameters.OrderBy(x => x.name).Select(x => x.name))
             {
-                TryAddAnimatorParameter(parameter);
+                TryAddAnimationClip(parameter);
             }
         }
 
-        private bool TryAddAnimatorParameter(string parameter)
+        private bool TryAddAnimationClip(string parameter)
         {
             ActionType actionType = ParseParameterToActionType(parameter);
 
-            if (!_actionTypeToParameterNames.TryGetValue(actionType, out var value))
+            if (!_actionTypeToAnimationClips.TryGetValue(actionType, out List<KotfAnimationClip> animationClips))
             {
-                _actionTypeToParameterNames.Add(actionType, new List<string> { parameter });
+                _actionTypeToAnimationClips.Add(actionType,
+                    new List<KotfAnimationClip> { KotfAnimationClip.Create(_host, actionType, parameter) });
+
                 return true;
             }
 
-            if (value.Exists(x => x.Equals(parameter)))
+            if (animationClips.Exists(x => x.ParameterName.Equals(parameter)))
                 return false;
 
-            value.Add(parameter);
+            animationClips.Add(KotfAnimationClip.Create(_host, actionType, parameter));
             return true;
         }
 
@@ -77,44 +70,49 @@ namespace KOTF.Core.Services
             throw new ArgumentException($"Could not parse {parameter} to {nameof(ActionType)}");
         }
 
-        private void ValidateTransitionConditions(AnimatorController controller)
+        private void ValidateTransitionConditions()
         {
-            var transitions = controller.layers
+            var transitions = _host.AnimatorController.layers
                 .SelectMany(x => x.stateMachine.states)
                 .SelectMany(x => x.state.transitions);
 
             foreach (var transition in transitions)
             {
-                AddTriggerParameter(controller, transition);
+                AddTriggerParameter(transition);
                 AddTriggerConditionToTransition(transition);
             }
         }
 
-        private void AddTriggerParameter(AnimatorController controller, AnimatorTransitionBase transition)
+        private void AddTriggerParameter(AnimatorTransitionBase transition)
         {
-            if (!TryAddAnimatorParameter(transition.destinationState.name))
+            if (!TryAddAnimationClip(transition.destinationState.name))
                 return;
 
-            controller.AddParameter(transition.destinationState.name, AnimatorControllerParameterType.Trigger);
+            _host.AnimatorController.AddParameter(transition.destinationState.name, AnimatorControllerParameterType.Trigger);
         }
 
         private void AddTriggerConditionToTransition(AnimatorTransitionBase transition)
         {
-            if (transition.conditions.Any(x => _actionTypeToParameterNames.SelectMany(x => x.Value).Contains(x.parameter)))
+            if (transition.conditions.Any(x => _actionTypeToAnimationClips
+                    .SelectMany(x => x.Value)
+                    .Select(x => x.ParameterName)
+                    .Contains(x.parameter)))
+            {
                 return;
+            }
 
             transition.AddCondition(AnimatorConditionMode.If, 0.0f, transition.destinationState.name);
         }
 
         public void TriggerAnimation(ActionType actionType, int animationParameterIndex = 0)
         {
-            if (!_actionTypeToParameterNames.TryGetValue(actionType, out List<string> parameters))
+            if (!_actionTypeToAnimationClips.TryGetValue(actionType, out List<KotfAnimationClip> animationClips))
             {
-                Debug.LogError($"Could not find {actionType} among {nameof(_actionTypeToParameterNames)}");
+                Debug.LogError($"Could not find {actionType} among {nameof(_actionTypeToAnimationClips)}");
                 return;
             }
 
-            _animator.SetTrigger(parameters[animationParameterIndex % parameters.Count]);
+            _host.Animator.SetTrigger(animationClips[animationParameterIndex % animationClips.Count].ParameterName);
         }
     }
 }
