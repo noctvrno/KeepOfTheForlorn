@@ -13,7 +13,7 @@ using KOTF.Utils.StringConstants;
 
 namespace KOTF.Core.Gameplay.Character
 {
-    public class MainPlayerCharacter : CharacterBase
+    public class MainPlayerCharacter : CharacterBase, IChainCapable
     {
         [Header("Movement")]
         [SerializeField]
@@ -37,7 +37,7 @@ namespace KOTF.Core.Gameplay.Character
 
         private EquipmentService _equipmentService;
 
-        private ChainAttackHandler _chainAttackHandler;
+        public ChainAttackHandler ChainAttackHandler { get; private set; }
 
         protected override void Awake()
         {
@@ -67,7 +67,7 @@ namespace KOTF.Core.Gameplay.Character
             AnimationService.ValidateAnimator(this);
 
             _characterController = GetComponent<CharacterController>();
-            _chainAttackHandler = new ChainAttackHandler(AnimationService, WieldedWeapon.ChainAttackFrame);
+            ChainAttackHandler = new ChainAttackHandler(AnimationService, WieldedWeapon.ChainAttackFrame);
 
             // Update the Animator to make sure that all references and properties are correct.
             Animator.runtimeAnimatorController = new AnimatorOverrideController(Animator.runtimeAnimatorController);
@@ -93,12 +93,6 @@ namespace KOTF.Core.Gameplay.Character
             //Debug.Log($"Movement speed: {_movementSpeed}");
         }
 
-        public override void OnExitAttackWindow()
-        {
-            base.OnExitAttackWindow();
-            StartCoroutine(_chainAttackHandler.RegisterChainPossibilityCoroutine());
-        }
-
         private Vector3 ComputeMovementVector(float longitudinalValue, float lateralValue)
         {
             return (lateralValue * transform.right + longitudinalValue * transform.forward).ToDeltaTime() * _movementSpeed;
@@ -106,11 +100,27 @@ namespace KOTF.Core.Gameplay.Character
 
         public override void Attack()
         {
-            Debug.Log($"Chainable: {_chainAttackHandler.Chainable}");
-            if (!Convert.ToBoolean(_attackInput.Input.ReadValue<float>()) || !_chainAttackHandler.Chainable)
+            Debug.Log($"Chainable: {ChainAttackHandler.Chainable}");
+            if (!Convert.ToBoolean(_attackInput.Input.ReadValue<float>()) || !ChainAttackHandler.Chainable)
                 return;
 
-            _chainAttackHandler.Chain();
+            ChainAttackHandler.Chain();
+        }
+
+        public override void OnExitAttackWindow()
+        {
+            base.OnExitAttackWindow();
+            StartCoroutine(ChainAttackHandler.RegisterChainPossibilityCoroutine());
+        }
+
+        public override void OnExitAttackAnimation()
+        {
+
+        }
+
+        public void OnExitChainPossibility()
+        {
+
         }
     }
 }

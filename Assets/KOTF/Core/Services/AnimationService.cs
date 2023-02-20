@@ -4,6 +4,7 @@ using System.Linq;
 using KOTF.Core.Gameplay.Character;
 using KOTF.Core.Input;
 using KOTF.Core.Wrappers;
+using KOTF.Utils.Extensions;
 using UnityEditor.Animations;
 using UnityEngine;
 
@@ -29,6 +30,7 @@ namespace KOTF.Core.Services
 
             InitializeAnimationClips();
             ValidateTransitionConditions();
+            InitializeAttackAnimationEvents();
         }
 
         private void InitializeAnimationClips()
@@ -42,11 +44,13 @@ namespace KOTF.Core.Services
         private bool TryAddAnimationClip(string parameter)
         {
             ActionType actionType = ParseParameterToActionType(parameter);
+            AnimationClip animationClip =
+                _host.AnimatorController.animationClips.FirstOrDefault(x => x.name.Equals(parameter));
 
             if (!_actionTypeToAnimationClips.TryGetValue(actionType, out List<KotfAnimationClip> animationClips))
             {
                 _actionTypeToAnimationClips.Add(actionType,
-                    new List<KotfAnimationClip> { KotfAnimationClip.Create(_host, actionType, parameter) });
+                    new List<KotfAnimationClip> { new(animationClip, actionType, parameter) });
 
                 return true;
             }
@@ -54,7 +58,7 @@ namespace KOTF.Core.Services
             if (animationClips.Exists(x => x.ParameterName.Equals(parameter)))
                 return false;
 
-            animationClips.Add(KotfAnimationClip.Create(_host, actionType, parameter));
+            animationClips.Add(new KotfAnimationClip(animationClip, actionType, parameter));
             return true;
         }
 
@@ -102,6 +106,46 @@ namespace KOTF.Core.Services
             }
 
             transition.AddCondition(AnimatorConditionMode.If, 0.0f, transition.destinationState.name);
+        }
+
+        private void InitializeAttackAnimationEvents()
+        {
+            GetAnimationClips(ActionType.Attack)?.Where(x => x.ActionType == ActionType.Attack).ForEach(
+                attackAnimationClip =>
+                {
+                    attackAnimationClip.AnimationClip.AddEvent(new AnimationEvent
+                    {
+                        functionName = nameof(_host.OnExitAttackAnimation),
+                        time = attackAnimationClip.AnimationClip.length
+                    });
+
+                    if (_host is not IChainCapable chainCapableCharacter)
+                        return;
+
+                    AnimationEvent onExitAttackWindowEvent =
+                        attackAnimationClip.AnimationClip.events.FirstOrDefault(x =>
+                            x.functionName.Equals(nameof(_host.OnExitAttackWindow)));
+
+                    if (onExitAttackWindowEvent == null)
+                        return;
+
+                    float exitAttackWindowFrame =
+                        attackAnimationClip.AnimationClip.frameRate * onExitAttackWindowEvent.time;
+
+                    float chainAttackEndFrameRate =
+                        exitAttackWindowFrame + chainCapableCharacter.WieldedWeapon.ChainAttackFrame;
+
+                    attackAnimationClip.AnimationClip.AddEvent(new AnimationEvent
+                    {
+                        functionName = nameof(chainCapableCharacter.OnExitChainPossibility),
+                        time = chainAttackEndFrameRate / attackAnimationClip.AnimationClip.frameRate
+                    });
+                });
+        }
+
+        private List<KotfAnimationClip> GetAnimationClips(ActionType actionType)
+        {
+            return _actionTypeToAnimationClips.TryGetValue(actionType, out var value) ? value : null;
         }
 
         public void TriggerAnimation(ActionType actionType, int animationParameterIndex = 0)

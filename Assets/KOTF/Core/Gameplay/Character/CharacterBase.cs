@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace KOTF.Core.Gameplay.Character
 {
-    public abstract class CharacterBase : KotfGameObject
+    public abstract class CharacterBase : KotfGameObject, IAggressive
     {
         #region Serializable fields
         [Header("Stats")]
@@ -81,6 +81,11 @@ namespace KOTF.Core.Gameplay.Character
         {
             WieldedWeapon.Collider.enabled = false;
             CharacterColliderService.Reset();
+        }
+
+        public virtual void OnExitAttackAnimation()
+        {
+
         }
     }
 }
