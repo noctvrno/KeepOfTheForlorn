@@ -13,7 +13,7 @@ using KOTF.Utils.StringConstants;
 
 namespace KOTF.Core.Gameplay.Character
 {
-    public class MainPlayerCharacter : CharacterBase
+    public class MainPlayerCharacter : CharacterBase, IChainCapable
     {
         [Header("Movement")]
         [SerializeField]
@@ -36,6 +36,8 @@ namespace KOTF.Core.Gameplay.Character
         private CharacterController _characterController;
 
         private EquipmentService _equipmentService;
+
+        public ChainAttackHandler ChainAttackHandler { get; private set; }
 
         protected override void Awake()
         {
@@ -65,6 +67,7 @@ namespace KOTF.Core.Gameplay.Character
             AnimationService.ValidateAnimator(this);
 
             _characterController = GetComponent<CharacterController>();
+            ChainAttackHandler = new ChainAttackHandler(AnimationService);
 
             // Update the Animator to make sure that all references and properties are correct.
             Animator.runtimeAnimatorController = new AnimatorOverrideController(Animator.runtimeAnimatorController);
@@ -97,7 +100,26 @@ namespace KOTF.Core.Gameplay.Character
 
         public override void Attack()
         {
-            TriggerAttackAnimation(Convert.ToBoolean(_attackInput.Input.ReadValue<float>()));
+            if (!Convert.ToBoolean(_attackInput.Input.ReadValue<float>()))
+                return;
+
+            ChainAttackHandler.Chain();
+        }
+
+        public override void OnExitAttackWindow()
+        {
+            base.OnExitAttackWindow();
+            ChainAttackHandler.RegisterChainPossibility();
+        }
+
+        public void OnExitChainPossibility()
+        {
+            ChainAttackHandler.ExitChain();
+        }
+
+        public override void OnExitAttackAnimation()
+        {
+            ChainAttackHandler.ResetChain();
         }
     }
 }

@@ -38,14 +38,23 @@ AnimationClip:
       - serializedVersion: 3
         time: 1
         value: {x: 22.155, y: 100.848, z: 38.043}
-        inSlope: {x: -10.1720085, y: -11.322998, z: 0}
-        outSlope: {x: -10.1720085, y: -11.322998, z: 0}
+        inSlope: {x: 0, y: 0, z: 0}
+        outSlope: {x: 0, y: 0, z: 0}
         tangentMode: 0
         weightedMode: 0
         inWeight: {x: 0.33333334, y: 0.33333334, z: 0.33333334}
         outWeight: {x: 0.33333334, y: 0.33333334, z: 0.33333334}
       - serializedVersion: 3
-        time: 1.5
+        time: 1.4166666
+        value: {x: 22.155, y: 100.848, z: 38.043}
+        inSlope: {x: 0, y: 0, z: 0}
+        outSlope: {x: 0, y: 0, z: 0}
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: {x: 0.33333334, y: 0.33333334, z: 0.33333334}
+        outWeight: {x: 0.33333334, y: 0.33333334, z: 0.33333334}
+      - serializedVersion: 3
+        time: 2
         value: {x: 19.612, y: 94.317, z: 20.944}
         inSlope: {x: 0, y: 0, z: 0}
         outSlope: {x: 0, y: 0, z: 0}
@@ -82,6 +91,15 @@ AnimationClip:
       - serializedVersion: 3
         time: 1
         value: {x: -0.29595757, y: 0.19521263, z: 1.0013001}
+        inSlope: {x: -0.3536395, y: 0, z: -0.25567475}
+        outSlope: {x: -0.3536395, y: 0, z: -0.25567475}
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: {x: 0.33333334, y: 0.33333334, z: 0.33333334}
+        outWeight: {x: 0.33333334, y: 0.33333334, z: 0.33333334}
+      - serializedVersion: 3
+        time: 1.4166666
+        value: {x: -0.377, y: 0.19521263, z: 0.912}
         inSlope: {x: 0, y: 0, z: 0}
         outSlope: {x: 0, y: 0, z: 0}
         tangentMode: 0
@@ -89,7 +107,7 @@ AnimationClip:
         inWeight: {x: 0.33333334, y: 0.33333334, z: 0.33333334}
         outWeight: {x: 0.33333334, y: 0.33333334, z: 0.33333334}
       - serializedVersion: 3
-        time: 1.5
+        time: 2
         value: {x: 0.4616269, y: 0.20237124, z: 1.1100776}
         inSlope: {x: 0, y: 0, z: 0}
         outSlope: {x: 0, y: 0, z: 0}
@@ -131,7 +149,7 @@ AnimationClip:
     m_AdditiveReferencePoseClip: {fileID: 0}
     m_AdditiveReferencePoseTime: 0
     m_StartTime: 0
-    m_StopTime: 1.5
+    m_StopTime: 2
     m_OrientationOffsetY: 0
     m_Level: 0
     m_CycleOffset: 0
@@ -171,6 +189,15 @@ AnimationClip:
       - serializedVersion: 3
         time: 1
         value: -0.29595757
+        inSlope: -0.3536395
+        outSlope: -0.3536395
+        tangentMode: 136
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1.4166666
+        value: -0.377
         inSlope: 0
         outSlope: 0
         tangentMode: 136
@@ -178,7 +205,7 @@ AnimationClip:
         inWeight: 0.33333334
         outWeight: 0.33333334
       - serializedVersion: 3
-        time: 1.5
+        time: 2
         value: 0.4616269
         inSlope: 0
         outSlope: 0
@@ -224,7 +251,16 @@ AnimationClip:
         inWeight: 0.33333334
         outWeight: 0.33333334
       - serializedVersion: 3
-        time: 1.5
+        time: 1.4166666
+        value: 0.19521263
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 136
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 2
         value: 0.20237124
         inSlope: 0
         outSlope: 0
@@ -263,6 +299,15 @@ AnimationClip:
       - serializedVersion: 3
         time: 1
         value: 1.0013001
+        inSlope: -0.25567475
+        outSlope: -0.25567475
+        tangentMode: 136
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1.4166666
+        value: 0.912
         inSlope: 0
         outSlope: 0
         tangentMode: 136
@@ -270,7 +315,7 @@ AnimationClip:
         inWeight: 0.33333334
         outWeight: 0.33333334
       - serializedVersion: 3
-        time: 1.5
+        time: 2
         value: 1.1100776
         inSlope: 0
         outSlope: 0
@@ -309,14 +354,23 @@ AnimationClip:
       - serializedVersion: 3
         time: 1
         value: 22.155
-        inSlope: -10.1720085
-        outSlope: -10.1720085
+        inSlope: 0
+        outSlope: 0
         tangentMode: 136
         weightedMode: 0
         inWeight: 0.33333334
         outWeight: 0.33333334
       - serializedVersion: 3
-        time: 1.5
+        time: 1.4166666
+        value: 22.155
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 136
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 2
         value: 19.612
         inSlope: 0
         outSlope: 0
@@ -355,14 +409,23 @@ AnimationClip:
       - serializedVersion: 3
         time: 1
         value: 100.848
-        inSlope: -11.322998
-        outSlope: -11.322998
+        inSlope: 0
+        outSlope: 0
         tangentMode: 136
         weightedMode: 0
         inWeight: 0.33333334
         outWeight: 0.33333334
       - serializedVersion: 3
-        time: 1.5
+        time: 1.4166666
+        value: 100.848
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 136
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 2
         value: 94.317
         inSlope: 0
         outSlope: 0
@@ -408,7 +471,16 @@ AnimationClip:
         inWeight: 0.33333334
         outWeight: 0.33333334
       - serializedVersion: 3
-        time: 1.5
+        time: 1.4166666
+        value: 38.043
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 136
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 2
         value: 20.944
         inSlope: 0
         outSlope: 0
@@ -466,6 +538,13 @@ AnimationClip:
     messageOptions: 0
   - time: 1
     functionName: OnExitAttackWindow
+    data: 
+    objectReferenceParameter: {fileID: 0}
+    floatParameter: 0
+    intParameter: 0
+    messageOptions: 0
+  - time: 2
+    functionName: OnExitAttackAnimation
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0

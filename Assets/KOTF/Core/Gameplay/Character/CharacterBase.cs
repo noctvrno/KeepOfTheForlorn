@@ -1,16 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using KOTF.Core.Gameplay.Equipment;
+﻿using KOTF.Core.Gameplay.Equipment;
 using KOTF.Core.Services;
 using KOTF.Core.Wrappers;
+using UnityEditor;
+using UnityEditor.Animations;
 using UnityEngine;
 
 namespace KOTF.Core.Gameplay.Character
 {
-    public abstract class CharacterBase : KotfGameObject
+    public abstract class CharacterBase : KotfGameObject, IAggressive
     {
         #region Serializable fields
         [Header("Stats")]
@@ -28,6 +25,7 @@ namespace KOTF.Core.Gameplay.Character
         protected AnimationService AnimationService { get; private set; }
         protected CharacterColliderService CharacterColliderService { get; private set; }
         public Animator Animator { get; private set; }
+        public AnimatorController AnimatorController { get; private set; }
         #endregion
 
         protected virtual void Awake()
@@ -40,6 +38,15 @@ namespace KOTF.Core.Gameplay.Character
         protected virtual void Start()
         {
             Animator = GetComponent<Animator>();
+            AnimatorController =
+                AssetDatabase.LoadAssetAtPath<AnimatorController>(
+                    AssetDatabase.GetAssetPath(Animator.runtimeAnimatorController));
+
+            if (AnimatorController == null)
+            {
+                Debug.LogError($"Could not find an associated AnimatorController for {name}.");
+                return;
+            }
 
             WieldedWeapon = GetComponentInChildren<Weapon>();
             WieldedWeapon.Owner = this;
@@ -54,11 +61,6 @@ namespace KOTF.Core.Gameplay.Character
         protected virtual void FixedUpdate()
         {
 
-        }
-
-        protected void TriggerAttackAnimation(bool value)
-        {
-            AnimationService.TriggerAttackAnimation(Animator, value);
         }
 
         public abstract void Move();
@@ -79,6 +81,11 @@ namespace KOTF.Core.Gameplay.Character
         {
             WieldedWeapon.Collider.enabled = false;
             CharacterColliderService.Reset();
+        }
+
+        public virtual void OnExitAttackAnimation()
+        {
+
         }
     }
 }

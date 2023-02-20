@@ -3,55 +3,62 @@ using System.Collections.Generic;
 using System.Linq;
 using KOTF.Core.Gameplay.Character;
 using KOTF.Core.Input;
-using UnityEditor;
+using KOTF.Core.Wrappers;
+using KOTF.Utils.Extensions;
 using UnityEditor.Animations;
 using UnityEngine;
 
 namespace KOTF.Core.Services
 {
+    /// <summary>
+    /// The AnimationService contains useful actions that pertain to specific or general animations (Idle, Walk, Attack, Chain Attack etc.)
+    /// </summary>
     public class AnimationService : IService
     {
+        private CharacterBase _host;
         private readonly Array _actionTypes = Enum.GetValues(typeof(ActionType));
-        private Dictionary<ActionType, List<string>> _actionTypeToParameterNames = new();
+        private Dictionary<ActionType, List<KotfAnimationClip>> _actionTypeToAnimationClips = new();
 
         public void ValidateAnimator(CharacterBase host)
         {
-            AnimatorController controller =
-                AssetDatabase.LoadAssetAtPath<AnimatorController>(
-                    AssetDatabase.GetAssetPath(host.Animator.runtimeAnimatorController));
-
-            if (controller == null)
-            {
-                Debug.LogError("Could not find an associated AnimatorController for the host.");
-                return;
-            }
-
-            InitializeAnimatorParameters(controller);
-            ValidateTransitionConditions(controller);
+            ValidateAttackAnimator(host);
         }
 
-        private void InitializeAnimatorParameters(AnimatorController controller)
+        private void ValidateAttackAnimator(CharacterBase host)
         {
-            foreach (var parameter in controller.parameters.OrderBy(x => x.name).Select(x => x.name))
+            _host = host;
+
+            InitializeAnimationClips();
+            ValidateTransitionConditions();
+            InitializeAttackAnimationEvents();
+        }
+
+        private void InitializeAnimationClips()
+        {
+            foreach (var parameter in _host.AnimatorController.parameters.OrderBy(x => x.name).Select(x => x.name))
             {
-                TryAddAnimatorParameter(parameter);
+                TryAddAnimationClip(parameter);
             }
         }
 
-        private bool TryAddAnimatorParameter(string parameter)
+        private bool TryAddAnimationClip(string parameter)
         {
             ActionType actionType = ParseParameterToActionType(parameter);
+            AnimationClip animationClip =
+                _host.AnimatorController.animationClips.FirstOrDefault(x => x.name.Equals(parameter));
 
-            if (!_actionTypeToParameterNames.TryGetValue(actionType, out var value))
+            if (!_actionTypeToAnimationClips.TryGetValue(actionType, out List<KotfAnimationClip> animationClips))
             {
-                _actionTypeToParameterNames.Add(actionType, new List<string> { parameter });
+                _actionTypeToAnimationClips.Add(actionType,
+                    new List<KotfAnimationClip> { new(animationClip, actionType, parameter) });
+
                 return true;
             }
 
-            if (value.Exists(x => x.Equals(parameter)))
+            if (animationClips.Exists(x => x.ParameterName.Equals(parameter)))
                 return false;
 
-            value.Add(parameter);
+            animationClips.Add(new KotfAnimationClip(animationClip, actionType, parameter));
             return true;
         }
 
@@ -67,38 +74,89 @@ namespace KOTF.Core.Services
             throw new ArgumentException($"Could not parse {parameter} to {nameof(ActionType)}");
         }
 
-        private void ValidateTransitionConditions(AnimatorController controller)
+        private void ValidateTransitionConditions()
         {
-            var transitions = controller.layers
+            var transitions = _host.AnimatorController.layers
                 .SelectMany(x => x.stateMachine.states)
                 .SelectMany(x => x.state.transitions);
 
             foreach (var transition in transitions)
             {
-                AddTriggerParameter(controller, transition);
+                AddTriggerParameter(transition);
                 AddTriggerConditionToTransition(transition);
             }
         }
 
-        private void AddTriggerParameter(AnimatorController controller, AnimatorTransitionBase transition)
+        private void AddTriggerParameter(AnimatorTransitionBase transition)
         {
-            if (!TryAddAnimatorParameter(transition.destinationState.name))
+            if (!TryAddAnimationClip(transition.destinationState.name))
                 return;
 
-            controller.AddParameter(transition.destinationState.name, AnimatorControllerParameterType.Trigger);
+            _host.AnimatorController.AddParameter(transition.destinationState.name, AnimatorControllerParameterType.Trigger);
         }
 
         private void AddTriggerConditionToTransition(AnimatorTransitionBase transition)
         {
-            if (transition.conditions.Any(x => _actionTypeToParameterNames.SelectMany(x => x.Value).Contains(x.parameter)))
+            if (transition.conditions.Any(x => _actionTypeToAnimationClips
+                    .SelectMany(x => x.Value)
+                    .Select(x => x.ParameterName)
+                    .Contains(x.parameter)))
+            {
                 return;
+            }
 
             transition.AddCondition(AnimatorConditionMode.If, 0.0f, transition.destinationState.name);
         }
 
-        public void TriggerAttackAnimation(Animator animator, bool value)
+        private void InitializeAttackAnimationEvents()
         {
+            GetAnimationClips(ActionType.Attack)?.Where(x => x.ActionType == ActionType.Attack).ForEach(
+                attackAnimationClip =>
+                {
+                    attackAnimationClip.AnimationClip.AddEvent(new AnimationEvent
+                    {
+                        functionName = nameof(_host.OnExitAttackAnimation),
+                        time = attackAnimationClip.AnimationClip.length
+                    });
 
+                    if (_host is not IChainCapable chainCapableCharacter)
+                        return;
+
+                    AnimationEvent onExitAttackWindowEvent =
+                        attackAnimationClip.AnimationClip.events.FirstOrDefault(x =>
+                            x.functionName.Equals(nameof(_host.OnExitAttackWindow)));
+
+                    if (onExitAttackWindowEvent == null)
+                        return;
+
+                    float exitAttackWindowFrame =
+                        attackAnimationClip.AnimationClip.frameRate * onExitAttackWindowEvent.time;
+
+                    float chainAttackEndFrameRate =
+                        exitAttackWindowFrame + chainCapableCharacter.WieldedWeapon.ChainAttackFrame;
+
+                    attackAnimationClip.AnimationClip.AddEvent(new AnimationEvent
+                    {
+                        functionName = nameof(chainCapableCharacter.OnExitChainPossibility),
+                        time = chainAttackEndFrameRate / attackAnimationClip.AnimationClip.frameRate
+                    });
+                });
+        }
+
+        private List<KotfAnimationClip> GetAnimationClips(ActionType actionType)
+        {
+            return _actionTypeToAnimationClips.TryGetValue(actionType, out var value) ? value : null;
+        }
+
+        public void TriggerAnimation(ActionType actionType, int animationParameterIndex = 0)
+        {
+            if (!_actionTypeToAnimationClips.TryGetValue(actionType, out List<KotfAnimationClip> animationClips))
+            {
+                Debug.LogError($"Could not find {actionType} among {nameof(_actionTypeToAnimationClips)}");
+                return;
+            }
+
+            _host.Animator.SetTrigger(animationClips[animationParameterIndex % animationClips.Count].ParameterName);
         }
     }
 }
