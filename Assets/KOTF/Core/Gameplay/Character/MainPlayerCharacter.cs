@@ -67,7 +67,7 @@ namespace KOTF.Core.Gameplay.Character
             AnimationService.ValidateAnimator(this);
 
             _characterController = GetComponent<CharacterController>();
-            ChainAttackHandler = new ChainAttackHandler(AnimationService, WieldedWeapon.ChainAttackFrame);
+            ChainAttackHandler = new ChainAttackHandler(AnimationService);
 
             // Update the Animator to make sure that all references and properties are correct.
             Animator.runtimeAnimatorController = new AnimatorOverrideController(Animator.runtimeAnimatorController);
@@ -100,8 +100,7 @@ namespace KOTF.Core.Gameplay.Character
 
         public override void Attack()
         {
-            Debug.Log($"Chainable: {ChainAttackHandler.Chainable}");
-            if (!Convert.ToBoolean(_attackInput.Input.ReadValue<float>()) || !ChainAttackHandler.Chainable)
+            if (!Convert.ToBoolean(_attackInput.Input.ReadValue<float>()))
                 return;
 
             ChainAttackHandler.Chain();
@@ -110,17 +109,17 @@ namespace KOTF.Core.Gameplay.Character
         public override void OnExitAttackWindow()
         {
             base.OnExitAttackWindow();
-            StartCoroutine(ChainAttackHandler.RegisterChainPossibilityCoroutine());
-        }
-
-        public override void OnExitAttackAnimation()
-        {
-
+            ChainAttackHandler.RegisterChainPossibility();
         }
 
         public void OnExitChainPossibility()
         {
+            ChainAttackHandler.ExitChain();
+        }
 
+        public override void OnExitAttackAnimation()
+        {
+            ChainAttackHandler.ResetChain();
         }
     }
 }

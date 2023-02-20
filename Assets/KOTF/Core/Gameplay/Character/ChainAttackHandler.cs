@@ -14,50 +14,38 @@ namespace KOTF.Core.Gameplay.Character
     public class ChainAttackHandler
     {
         private readonly AnimationService _animationService;
-        private readonly int _frames;
         private int _chainIndex;
-        public bool Chainable { get; private set; } = true;
+        private bool _chainable = true;
 
-        public ChainAttackHandler(AnimationService animationService, int frames)
+        public ChainAttackHandler(AnimationService animationService)
         {
-            _frames = frames;
             _animationService = animationService;
         }
 
-        public IEnumerator RegisterChainPossibilityCoroutine()
+        public void RegisterChainPossibility()
         {
-            BeforeChain();
-            yield return new WaitForFrame(_frames);
-            AfterChain();
-        }
-
-        private void BeforeChain()
-        {
-            Debug.Log($"Waiting at: {Time.frameCount}");
-            Chainable = true;
-        }
-
-        private void AfterChain()
-        {
-            Debug.Log($"Done waiting at: {Time.frameCount}");
-            if (!Chainable)
-                return;
-
-            ResetChain();
+            _chainable = true;
         }
 
         public void Chain()
         {
-            Debug.Log($"Chain Index: {_chainIndex}");
+            if (!_chainable)
+                return;
+
             _animationService.TriggerAnimation(ActionType.Attack, _chainIndex++);
-            Chainable = false;
+            _chainable = false;
+        }
+
+        public void ExitChain()
+        {
+            _animationService.TriggerAnimation(ActionType.Idle);
+            _chainable = false;
         }
 
         public void ResetChain()
         {
-            _animationService.TriggerAnimation(ActionType.Idle);
             _chainIndex = 0;
-            Chainable = true;
+            _chainable = true;
         }
     }
 }
