@@ -13,13 +13,13 @@ namespace KOTF.Core.Gameplay.Character
 {
     public class ChainAttackHandler
     {
-        private readonly AnimationService _animationService;
+        private readonly CharacterAnimationHandler _characterAnimationHandler;
         private int _chainIndex;
         private bool _chainable = true;
 
-        public ChainAttackHandler(AnimationService animationService)
+        public ChainAttackHandler(CharacterAnimationHandler characterAnimationHandler)
         {
-            _animationService = animationService;
+            _characterAnimationHandler = characterAnimationHandler;
         }
 
         public void RegisterChainPossibility()
@@ -32,13 +32,13 @@ namespace KOTF.Core.Gameplay.Character
             if (!_chainable)
                 return;
 
-            _animationService.TriggerAnimation(ActionType.Attack, _chainIndex++);
+            _characterAnimationHandler.TriggerAnimation(ActionType.Attack, _chainIndex++);
             _chainable = false;
         }
 
         public void ExitChain()
         {
-            _animationService.TriggerAnimation(ActionType.Idle);
+            _characterAnimationHandler.TriggerAnimation(ActionType.Idle);
             _chainable = false;
         }
 

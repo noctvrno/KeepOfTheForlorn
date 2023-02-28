@@ -11,23 +11,26 @@ using UnityEngine;
 namespace KOTF.Core.Services
 {
     /// <summary>
-    /// The AnimationService contains useful actions that pertain to specific or general animations (Idle, Walk, Attack, Chain Attack etc.)
+    /// The CharacterAnimationHandler contains useful actions that pertain to specific or general animations (Idle, Walk, Attack, Chain Attack etc.)
     /// </summary>
-    public class AnimationService : IService
+    public class CharacterAnimationHandler
     {
-        private CharacterBase _host;
+        private readonly CharacterBase _host;
         private readonly Array _actionTypes = Enum.GetValues(typeof(ActionType));
         private Dictionary<ActionType, List<KotfAnimationClip>> _actionTypeToAnimationClips = new();
 
-        public void ValidateAnimator(CharacterBase host)
-        {
-            ValidateAttackAnimator(host);
-        }
-
-        private void ValidateAttackAnimator(CharacterBase host)
+        public CharacterAnimationHandler(CharacterBase host)
         {
             _host = host;
+        }
 
+        public void ValidateAnimator()
+        {
+            ValidateAttackAnimator();
+        }
+
+        private void ValidateAttackAnimator()
+        {
             InitializeAnimationClips();
             ValidateTransitionConditions();
             InitializeAttackAnimationEvents();
