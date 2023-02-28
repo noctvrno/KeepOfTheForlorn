@@ -64,10 +64,10 @@ namespace KOTF.Core.Gameplay.Character
         {
             base.Start();
 
-            AnimationService.ValidateAnimator(this);
+            CharacterAnimationHandler.ValidateAnimator();
 
             _characterController = GetComponent<CharacterController>();
-            ChainAttackHandler = new ChainAttackHandler(AnimationService);
+            ChainAttackHandler = new ChainAttackHandler(CharacterAnimationHandler);
 
             // Update the Animator to make sure that all references and properties are correct.
             Animator.runtimeAnimatorController = new AnimatorOverrideController(Animator.runtimeAnimatorController);
