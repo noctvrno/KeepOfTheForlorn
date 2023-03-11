@@ -1,4 +1,5 @@
-﻿using KOTF.Core.Gameplay.Equipment;
+﻿using KOTF.Core.Gameplay.Attribute;
+using KOTF.Core.Gameplay.Equipment;
 using KOTF.Core.Services;
 using KOTF.Core.Wrappers;
 using UnityEditor;
@@ -11,12 +12,8 @@ namespace KOTF.Core.Gameplay.Character
     {
         #region Serializable fields
         [Header("Stats")]
-        [SerializeField] private int _healthPoints = 1000;
-        public int HealthPoints
-        {
-            get => _healthPoints;
-            set => _healthPoints = value;
-        }
+        [SerializeField] private DiscreteGatedAttribute<float> _healthAttribute;
+        public DiscreteGatedAttribute<float> HealthAttribute => _healthAttribute;
         #endregion
 
         #region Objected references
