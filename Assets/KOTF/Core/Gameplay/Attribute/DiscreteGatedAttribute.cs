@@ -1,24 +1,37 @@
 ﻿using System;
+using UnityEngine;
 
 namespace KOTF.Core.Gameplay.Attribute
 {
+    [Serializable]
     public class DiscreteGatedAttribute<T> : IGatedAttribute<T>
         where T : IComparable
     {
-        public T Value { get; private set; }
-        public T MinimumValue { get; }
-        public T MaximumValue { get; }
-
-        public DiscreteGatedAttribute(T value, T minimumValue, T maximumValue)
+        [SerializeField] private T _value;
+        public T Value
         {
-            Value = value;
-            MinimumValue = minimumValue;
-            MaximumValue = maximumValue;
+            get => _value;
+            set
+            {
+                _value = value;
+                ValueChangedEventHandler?.Invoke(this, EventArgs.Empty);
+            }
         }
 
-        public void Update(T target)
+        [SerializeField] private T _minimumValue;
+        public T MinimumValue
         {
-            Value = target;
+            get => _minimumValue;
+            set => _minimumValue = value;
         }
+
+        [SerializeField] private T _maximumValue;
+        public T MaximumValue
+        {
+            get => _maximumValue;
+            set => _maximumValue = value;
+        }
+
+        public EventHandler ValueChangedEventHandler { get; set; }
     }
 }

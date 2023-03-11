@@ -20,8 +20,8 @@ namespace KOTF.Core.Gameplay.Equipment
         public CharacterBase Owner { get; set; }
 
         [Header("Stats")]
-        [SerializeField] private int _baseDamage = 500;
-        public int BaseDamage => _baseDamage;
+        [SerializeField] private float _baseDamage = 500.0f;
+        public float BaseDamage => _baseDamage;
 
         [SerializeField] private int _chainAttackFrame;
         public int ChainAttackFrame => _chainAttackFrame;

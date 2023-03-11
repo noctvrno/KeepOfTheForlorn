@@ -9,6 +9,7 @@ using UnityEngine;
 using KOTF.Utils.Extensions;
 using KOTF.Core.Input;
 using KOTF.Core.Services;
+using KOTF.Core.UI.HUD;
 using KOTF.Utils.StringConstants;
 
 namespace KOTF.Core.Gameplay.Character
@@ -38,6 +39,7 @@ namespace KOTF.Core.Gameplay.Character
         private EquipmentService _equipmentService;
 
         public ChainAttackHandler ChainAttackHandler { get; private set; }
+        private HudObjectHandler _hudObjectHandler;
 
         protected override void Awake()
         {
@@ -63,6 +65,9 @@ namespace KOTF.Core.Gameplay.Character
         protected override void Start()
         {
             base.Start();
+
+            _hudObjectHandler = ScriptableObject.CreateInstance<HudObjectHandler>();
+            _hudObjectHandler.Initialize();
 
             CharacterAnimationHandler.ValidateAnimator();
 
@@ -90,7 +95,6 @@ namespace KOTF.Core.Gameplay.Character
             base.FixedUpdate();
             _movementSpeed = _movementSpeed.AlterWithinRangeTol(_minMovementSpeed, _maxMovementSpeed, _acceleration,
                 Convert.ToBoolean(_sprintInput.Input.ReadValue<float>()));
-            //Debug.Log($"Movement speed: {_movementSpeed}");
         }
 
         private Vector3 ComputeMovementVector(float longitudinalValue, float lateralValue)
