@@ -90,16 +90,20 @@ namespace KOTF.Core.Gameplay.Character
             _characterController.Move(new Vector3(computedMovementVector.x, 0.0f, computedMovementVector.z));
         }
 
-        protected override void FixedUpdate()
-        {
-            base.FixedUpdate();
-            _movementSpeed = _movementSpeed.AlterWithinRangeTol(_minMovementSpeed, _maxMovementSpeed, _acceleration,
-                Convert.ToBoolean(_sprintInput.Input.ReadValue<float>()));
-        }
-
         private Vector3 ComputeMovementVector(float longitudinalValue, float lateralValue)
         {
-            return (lateralValue * transform.right + longitudinalValue * transform.forward).ToDeltaTime() * _movementSpeed;
+            ComputeMovementSpeed();
+            Transform currentTransform = transform;
+            return (lateralValue * currentTransform.right + longitudinalValue * currentTransform.forward).ToDeltaTime() * _movementSpeed;
+        }
+
+        private void ComputeMovementSpeed()
+        {
+            _movementSpeed = Convert.ToBoolean(_sprintInput.Input.ReadValue<float>())
+                ? Mathf.Clamp(_movementSpeed + _movementSpeed * Time.deltaTime * _acceleration, _minMovementSpeed,
+                    _maxMovementSpeed)
+                : Mathf.Clamp(_movementSpeed - _movementSpeed * Time.deltaTime * _acceleration, _minMovementSpeed,
+                    _maxMovementSpeed);
         }
 
         public override void Attack()
