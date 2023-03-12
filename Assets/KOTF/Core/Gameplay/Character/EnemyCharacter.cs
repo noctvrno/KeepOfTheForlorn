@@ -20,9 +20,9 @@ namespace KOTF.Core.Gameplay.Character
         private NavMeshAgent _navMeshAgent;
         #endregion
 
-        protected override void Start()
+        protected override void InitializeFields()
         {
-            base.Start();
+            base.InitializeFields();
             _mainPlayerCharacter = FindObjectOfType<MainPlayerCharacter>();
             _navMeshAgent = GetComponent<NavMeshAgent>();
         }
