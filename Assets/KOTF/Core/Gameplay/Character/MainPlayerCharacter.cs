@@ -93,7 +93,8 @@ namespace KOTF.Core.Gameplay.Character
         private Vector3 ComputeMovementVector(float longitudinalValue, float lateralValue)
         {
             ComputeMovementSpeed();
-            return (lateralValue * transform.right + longitudinalValue * transform.forward).ToDeltaTime() * _movementSpeed;
+            Transform currentTransform = transform;
+            return (lateralValue * currentTransform.right + longitudinalValue * currentTransform.forward).ToDeltaTime() * _movementSpeed;
         }
 
         private void ComputeMovementSpeed()
