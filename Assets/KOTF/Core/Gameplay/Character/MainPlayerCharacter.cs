@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using KOTF.Core.Gameplay.Equipment;
 using UnityEngine;
 using KOTF.Utils.Extensions;
@@ -16,6 +11,7 @@ namespace KOTF.Core.Gameplay.Character
 {
     public class MainPlayerCharacter : CharacterBase, IChainCapable
     {
+        #region Serializable fields
         [Header("Movement")]
         [SerializeField]
         [Tooltip("The movement speed value. This controls how fast the character walks.")]
@@ -26,6 +22,7 @@ namespace KOTF.Core.Gameplay.Character
         [SerializeField]
         [Tooltip("How fast the movement speed reaches the sprinting speed.")]
         private float _acceleration;
+        #endregion
 
         // These fields should be readonly but Unity does not support their usage.
         private float _minMovementSpeed;
@@ -35,24 +32,43 @@ namespace KOTF.Core.Gameplay.Character
         private InputHandler _attackInput;
         private InputHandler _sprintInput;
         private CharacterController _characterController;
-
         private EquipmentService _equipmentService;
+        private HudObjectHandler _hudObjectHandler;
 
         public ChainAttackHandler ChainAttackHandler { get; private set; }
-        private HudObjectHandler _hudObjectHandler;
 
         protected override void Awake()
         {
             new Initialization.Initializer().Initialize();
             base.Awake();
+        }
+
+        protected override void InitializeServices()
+        {
+            base.InitializeServices();
+
+            _equipmentService = ServiceProvider.Get<EquipmentService>();
+            _equipmentService.AttachEquipmentTo<Weapon>(WeaponPrefabNames.LONGSWORD, gameObject);
+        }
+
+        protected override void InitializeFields()
+        {
+            base.InitializeFields();
+
+            InitializeInputs();
 
             _minMovementSpeed = _movementSpeed;
             _maxMovementSpeed = _sprintToMovementSpeedRatio * _movementSpeed;
 
-            InitializeInputs();
-            _equipmentService = ServiceProvider.Get<EquipmentService>();
+            _hudObjectHandler = ScriptableObject.CreateInstance<HudObjectHandler>();
+            _hudObjectHandler.Initialize();
 
-            _equipmentService.AttachEquipmentTo<Weapon>(WeaponPrefabNames.LONGSWORD, gameObject);
+            ChainAttackHandler = new ChainAttackHandler(CharacterAnimationHandler);
+
+            _characterController = GetComponent<CharacterController>();
+
+            // Update the Animator to make sure that all references and properties are correct.
+            Animator.runtimeAnimatorController = new AnimatorOverrideController(Animator.runtimeAnimatorController);
         }
 
         private void InitializeInputs()
@@ -60,22 +76,6 @@ namespace KOTF.Core.Gameplay.Character
             _movementInput = InputFactory.GetInput(ActionType.Movement);
             _attackInput = InputFactory.GetInput(ActionType.Attack);
             _sprintInput = InputFactory.GetInput(ActionType.Sprint);
-        }
-
-        protected override void Start()
-        {
-            base.Start();
-
-            _hudObjectHandler = ScriptableObject.CreateInstance<HudObjectHandler>();
-            _hudObjectHandler.Initialize();
-
-            CharacterAnimationHandler.ValidateAnimator();
-
-            _characterController = GetComponent<CharacterController>();
-            ChainAttackHandler = new ChainAttackHandler(CharacterAnimationHandler);
-
-            // Update the Animator to make sure that all references and properties are correct.
-            Animator.runtimeAnimatorController = new AnimatorOverrideController(Animator.runtimeAnimatorController);
         }
 
         public override void Move()

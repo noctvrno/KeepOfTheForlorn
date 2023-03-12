@@ -16,7 +16,7 @@ namespace KOTF.Core.Gameplay.Character
         public DiscreteGatedAttribute<float> HealthAttribute => _healthAttribute;
         #endregion
 
-        #region Objected references
+        #region Object references
         public Weapon WieldedWeapon { get; private set; }
         protected ServiceProvider ServiceProvider { get; private set; }
         protected CharacterAnimationHandler CharacterAnimationHandler { get; private set; }
@@ -27,13 +27,26 @@ namespace KOTF.Core.Gameplay.Character
 
         protected virtual void Awake()
         {
-            ServiceProvider = ServiceProvider.GetInstance();
-            CharacterAnimationHandler = new CharacterAnimationHandler(this);
-            CharacterColliderService = ServiceProvider.Get<CharacterColliderService>();
+
         }
 
         protected virtual void Start()
         {
+            InitializeServices();
+            InitializeFields();
+        }
+
+        protected virtual void InitializeServices()
+        {
+            ServiceProvider = ServiceProvider.GetInstance();
+            CharacterColliderService = ServiceProvider.Get<CharacterColliderService>();
+        }
+
+        protected virtual void InitializeFields()
+        {
+            WieldedWeapon = GetComponentInChildren<Weapon>();
+            WieldedWeapon.Owner = this;
+
             Animator = GetComponent<Animator>();
             AnimatorController =
                 AssetDatabase.LoadAssetAtPath<AnimatorController>(
@@ -45,8 +58,8 @@ namespace KOTF.Core.Gameplay.Character
                 return;
             }
 
-            WieldedWeapon = GetComponentInChildren<Weapon>();
-            WieldedWeapon.Owner = this;
+            CharacterAnimationHandler = new CharacterAnimationHandler(this);
+            CharacterAnimationHandler.ValidateAnimator();
         }
 
         protected virtual void Update()
