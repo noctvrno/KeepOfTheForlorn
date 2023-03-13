@@ -15,7 +15,7 @@ namespace KOTF.Core.UI.HUD
             Slider = GetComponent<Slider>();
         }
 
-        public void UpdateValues(IGatedAttribute<float> target)
+        public void UpdateValues(GatedAttribute<float> target)
         {
             Slider.minValue = target.MinimumValue;
             Slider.maxValue = target.MaximumValue;
@@ -24,7 +24,7 @@ namespace KOTF.Core.UI.HUD
 
         public void OnValueChanged(object sender, EventArgs e)
         {
-            if (sender is not IGatedAttribute<float> healthAttribute)
+            if (sender is not GatedAttribute<float> healthAttribute)
                 return;
 
             UpdateValues(healthAttribute);

@@ -12,8 +12,8 @@ namespace KOTF.Core.Gameplay.Character
     {
         #region Serializable fields
         [Header("Stats")]
-        [SerializeField] private DiscreteGatedAttribute<float> _healthAttribute;
-        public DiscreteGatedAttribute<float> HealthAttribute => _healthAttribute;
+        [SerializeField] private GatedAttribute<float> _healthAttribute;
+        public GatedAttribute<float> HealthAttribute => _healthAttribute;
         #endregion
 
         #region Object references

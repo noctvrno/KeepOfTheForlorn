@@ -7,7 +7,7 @@ namespace KOTF.Core.Services
 {
     public class CharacterColliderService : IService
     {
-        private HashSet<int> _registeredCollisionIds = new();
+        private readonly HashSet<int> _registeredCollisionIds = new();
 
         public void RegisterCollisionBetween(Weapon aggressorWeapon, CharacterBase victim)
         {
@@ -19,7 +19,7 @@ namespace KOTF.Core.Services
 
             victim.HealthAttribute.Value -= aggressorWeapon.BaseDamage;
             Debug.Log($"{aggressorWeapon.Owner.name} inflicted {aggressorWeapon.BaseDamage} base damage upon {victim.gameObject.name}.");
-            if (victim.HealthAttribute.Value <= 0.0f)
+            if (victim.HealthAttribute.Value.Equals(victim.HealthAttribute.MinimumValue))
                 victim.Die();
         }
 
