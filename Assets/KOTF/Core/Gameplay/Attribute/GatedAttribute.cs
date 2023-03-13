@@ -1,10 +1,11 @@
 ﻿using System;
+using KOTF.Utils.Extensions;
 using UnityEngine;
 
 namespace KOTF.Core.Gameplay.Attribute
 {
     [Serializable]
-    public class DiscreteGatedAttribute<T> : IGatedAttribute<T>
+    public class GatedAttribute<T> : IAttribute<T>
         where T : IComparable
     {
         [SerializeField] private T _value;
@@ -13,7 +14,7 @@ namespace KOTF.Core.Gameplay.Attribute
             get => _value;
             set
             {
-                _value = value;
+                _value = value.Clamp(_minimumValue, _maximumValue);
                 ValueChangedEventHandler?.Invoke(this, EventArgs.Empty);
             }
         }
