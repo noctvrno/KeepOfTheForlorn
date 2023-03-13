@@ -15,7 +15,7 @@ namespace KOTF.Core.UI.HUD
         {
             _player = FindObjectOfType<MainPlayerCharacter>();
             _healthBar = FindObjectOfType<HealthBar>();
-            _healthBar.UpdateValues(_player.HealthAttribute);
+            _healthBar.UpdateHudBar(_player.HealthAttribute);
 
             RegisterUpdates();
         }
