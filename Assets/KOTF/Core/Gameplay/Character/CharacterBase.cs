@@ -45,7 +45,6 @@ namespace KOTF.Core.Gameplay.Character
         protected virtual void InitializeFields()
         {
             WieldedWeapon = GetComponentInChildren<Weapon>();
-            WieldedWeapon.Owner = this;
 
             Animator = GetComponent<Animator>();
             AnimatorController =

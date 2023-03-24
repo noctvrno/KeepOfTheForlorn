@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using KOTF.Core.Gameplay.Attribute;
 using KOTF.Core.Gameplay.Character;
 using KOTF.Core.Services;
 using KOTF.Core.Wrappers;
@@ -20,19 +21,29 @@ namespace KOTF.Core.Gameplay.Equipment
         public CharacterBase Owner { get; set; }
 
         [Header("Stats")]
-        [SerializeField] private float _baseDamage = 500.0f;
+        [SerializeField] private float _baseDamage;
         public float BaseDamage => _baseDamage;
 
         [SerializeField] private int _chainAttackFrame;
         public int ChainAttackFrame => _chainAttackFrame;
+
+        [SerializeField] private AttributeModifier _staminaModifier;
+        public AttributeModifier StaminaModifier => _staminaModifier;
 
         private void Start()
         {
             if (!TryGetComponent(out _collider))
                 Debug.LogError("The collider of the weapon has not been placed.");
 
+            Owner = GetComponentInParent<CharacterBase>();
+
             var serviceProvider = ServiceProvider.GetInstance();
             _characterColliderService = serviceProvider.Get<CharacterColliderService>();
+
+            if (Owner is not MainPlayerCharacter player)
+                return;
+
+            _staminaModifier.Attribute = player.StaminaAttribute;
         }
 
         private void OnCollisionEnter(Collision collision)
