@@ -39,7 +39,6 @@ namespace KOTF.Core.Gameplay.Character
 
         private CharacterController _characterController;
         private EquipmentService _equipmentService;
-        private HudObjectHandler _hudObjectHandler;
 
         public ChainAttackHandler ChainAttackHandler { get; private set; }
 
@@ -66,8 +65,7 @@ namespace KOTF.Core.Gameplay.Character
             _minMovementSpeed = _movementSpeed;
             _maxMovementSpeed = _sprintToMovementSpeedRatio * _movementSpeed;
 
-            _hudObjectHandler = ScriptableObject.CreateInstance<HudObjectHandler>();
-            _hudObjectHandler.Initialize();
+            ScriptableObject.CreateInstance<HudObjectHandler>().Initialize(); // TODO: Perhaps this would be better as a service.
 
             ChainAttackHandler = new ChainAttackHandler(CharacterAnimationHandler);
 
