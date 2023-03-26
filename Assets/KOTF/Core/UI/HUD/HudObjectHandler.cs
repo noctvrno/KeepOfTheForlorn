@@ -1,4 +1,5 @@
-﻿using KOTF.Core.Gameplay.Character;
+﻿using System;
+using KOTF.Core.Gameplay.Character;
 using UnityEngine;
 
 namespace KOTF.Core.UI.HUD
@@ -10,19 +11,30 @@ namespace KOTF.Core.UI.HUD
     {
         private MainPlayerCharacter _player;
         private HealthBar _healthBar;
+        private StaminaBar _staminaBar;
 
         public void Initialize()
         {
             _player = FindObjectOfType<MainPlayerCharacter>();
             _healthBar = FindObjectOfType<HealthBar>();
+            _staminaBar = FindObjectOfType<StaminaBar>();
+
             _healthBar.UpdateHudBar(_player.HealthAttribute);
+            _staminaBar.UpdateHudBar(_player.StaminaAttribute);
 
             RegisterUpdates();
         }
 
-        public void RegisterUpdates()
+        private void RegisterUpdates()
         {
             _player.HealthAttribute.ValueChangedEventHandler += _healthBar.OnValueChanged;
+            _player.StaminaAttribute.ValueChangedEventHandler += _staminaBar.OnValueChanged;
+        }
+
+        private void OnDisable()
+        {
+            _player.HealthAttribute.ValueChangedEventHandler -= _healthBar.OnValueChanged;
+            _player.StaminaAttribute.ValueChangedEventHandler -= _staminaBar.OnValueChanged;
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using KOTF.Core.Gameplay.Attribute;
 using KOTF.Core.Gameplay.Equipment;
 using UnityEngine;
 using KOTF.Utils.Extensions;
@@ -22,6 +23,10 @@ namespace KOTF.Core.Gameplay.Character
         [SerializeField]
         [Tooltip("How fast the movement speed reaches the sprinting speed.")]
         private float _acceleration;
+
+        [Header("Stats")]
+        [SerializeField] private GatedAttribute<float> _staminaAttribute;
+        public GatedAttribute<float> StaminaAttribute => _staminaAttribute;
         #endregion
 
         // These fields should be readonly but Unity does not support their usage.
@@ -31,9 +36,9 @@ namespace KOTF.Core.Gameplay.Character
         private InputHandler _movementInput;
         private InputHandler _attackInput;
         private InputHandler _sprintInput;
+
         private CharacterController _characterController;
         private EquipmentService _equipmentService;
-        private HudObjectHandler _hudObjectHandler;
 
         public ChainAttackHandler ChainAttackHandler { get; private set; }
 
@@ -60,8 +65,7 @@ namespace KOTF.Core.Gameplay.Character
             _minMovementSpeed = _movementSpeed;
             _maxMovementSpeed = _sprintToMovementSpeedRatio * _movementSpeed;
 
-            _hudObjectHandler = ScriptableObject.CreateInstance<HudObjectHandler>();
-            _hudObjectHandler.Initialize();
+            ScriptableObject.CreateInstance<HudObjectHandler>().Initialize(); // TODO: Perhaps this would be better as a service.
 
             ChainAttackHandler = new ChainAttackHandler(CharacterAnimationHandler);
 
@@ -112,6 +116,12 @@ namespace KOTF.Core.Gameplay.Character
                 return;
 
             ChainAttackHandler.Chain();
+        }
+
+        public override void OnEnterAttackWindow()
+        {
+            base.OnEnterAttackWindow();
+            WieldedWeapon.StaminaModifier.Diminish();
         }
 
         public override void OnExitAttackWindow()

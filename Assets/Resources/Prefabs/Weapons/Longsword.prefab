@@ -113,6 +113,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _baseDamage: 100
   _chainAttackFrame: 25
+  _staminaModifier:
+    _diminishingValue: 100
+    _diminishingFrequency: 0
 --- !u!54 &-6690792629912465976
 Rigidbody:
   m_ObjectHideFlags: 0
