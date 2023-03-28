@@ -24,9 +24,8 @@ namespace KOTF.Core.Gameplay.Character
         [Tooltip("How fast the movement speed reaches the sprinting speed.")]
         private float _acceleration;
 
-        [Header("Stats")]
-        [SerializeField] private GatedAttribute<float> _staminaAttribute;
-        public GatedAttribute<float> StaminaAttribute => _staminaAttribute;
+        [field: SerializeField]
+        public GatedAttribute<float> StaminaAttribute { get; private set; }
         #endregion
 
         // These fields should be readonly but Unity does not support their usage.
@@ -121,7 +120,7 @@ namespace KOTF.Core.Gameplay.Character
         public override void OnEnterAttackWindow()
         {
             base.OnEnterAttackWindow();
-            WieldedWeapon.StaminaModifier.Diminish();
+            WieldedWeapon.StaminaDiminisher.Modify();
         }
 
         public override void OnExitAttackWindow()
