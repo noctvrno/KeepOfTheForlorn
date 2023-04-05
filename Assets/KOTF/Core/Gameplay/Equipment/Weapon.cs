@@ -43,7 +43,7 @@ namespace KOTF.Core.Gameplay.Equipment
             if (Owner is not MainPlayerCharacter player)
                 return;
 
-            StaminaDiminisher.Attribute = player.StaminaAttribute;
+            StaminaDiminisher.Initialize(this, player.StaminaAttribute);
         }
 
         private void OnCollisionEnter(Collision collision)

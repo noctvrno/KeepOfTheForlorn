@@ -1,4 +1,5 @@
 ﻿using System;
+using KOTF.Core.Wrappers;
 using UnityEngine;
 
 namespace KOTF.Core.Gameplay.Attribute
@@ -6,13 +7,25 @@ namespace KOTF.Core.Gameplay.Attribute
     [Serializable]
     public abstract class AttributeModifierBase
     {
-        public IAttribute<float> Attribute { get; set; }
+        public KotfGameObject Host { get; protected set; }
+
+        public virtual IAttribute<float> Attribute { get; protected set; }
+
+        public virtual float Threshold { get; set; }
 
         [field: SerializeField]
-        public float Value { get; set; }
+        [Tooltip("The value that is being changed per each update.")]
+        public float ValuePerUpdate { get; set; }
 
         [field: SerializeField]
-        public float Frequency { get; set; }
+        [Tooltip("The time interval between each update. [ms]\nA value of 0 means that the update will happen instantly.")]
+        public float UpdateRate { get; set; }
+
+        public virtual void Initialize(KotfGameObject host, IAttribute<float> attribute)
+        {
+            Host = host;
+            Attribute = attribute;
+        }
 
         public abstract void Modify();
     }
