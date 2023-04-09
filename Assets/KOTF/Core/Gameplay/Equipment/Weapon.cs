@@ -20,15 +20,15 @@ namespace KOTF.Core.Gameplay.Equipment
         public string Description { get; set; }
         public CharacterBase Owner { get; set; }
 
-        [Header("Stats")]
-        [SerializeField] private float _baseDamage;
-        public float BaseDamage => _baseDamage;
+        [field: Header("Stats")]
+        [field: SerializeField]
+        public float BaseDamage { get; private set; }
 
-        [SerializeField] private int _chainAttackFrame;
-        public int ChainAttackFrame => _chainAttackFrame;
+        [field: SerializeField]
+        public int ChainAttackFrame { get; private set; }
 
-        [SerializeField] private AttributeModifier _staminaModifier;
-        public AttributeModifier StaminaModifier => _staminaModifier;
+        [field: SerializeField]
+        public AttributeDiminisher StaminaDiminisher { get; private set; }
 
         private void Start()
         {
@@ -43,7 +43,7 @@ namespace KOTF.Core.Gameplay.Equipment
             if (Owner is not MainPlayerCharacter player)
                 return;
 
-            _staminaModifier.Attribute = player.StaminaAttribute;
+            StaminaDiminisher.Initialize(serviceProvider.Get<CoroutineService>(), player.StaminaAttribute);
         }
 
         private void OnCollisionEnter(Collision collision)

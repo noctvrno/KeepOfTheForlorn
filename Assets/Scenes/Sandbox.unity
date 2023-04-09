@@ -130,6 +130,22 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 864593598}
     m_Modifications:
+    - target: {fileID: 2462695303443705350, guid: edccbf15fadd9704cb7a2020a492b120, type: 3}
+      propertyPath: <BaseDamage>k__BackingField
+      value: 500
+      objectReference: {fileID: 0}
+    - target: {fileID: 2462695303443705350, guid: edccbf15fadd9704cb7a2020a492b120, type: 3}
+      propertyPath: <ChainAttackFrame>k__BackingField
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 2462695303443705350, guid: edccbf15fadd9704cb7a2020a492b120, type: 3}
+      propertyPath: <StaminaDiminisher>k__BackingField.<Value>k__BackingField
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 2462695303443705350, guid: edccbf15fadd9704cb7a2020a492b120, type: 3}
+      propertyPath: <StaminaDiminisher>k__BackingField.<ValuePerUpdate>k__BackingField
+      value: 500
+      objectReference: {fileID: 0}
     - target: {fileID: 5655345345969914227, guid: edccbf15fadd9704cb7a2020a492b120, type: 3}
       propertyPath: m_Name
       value: Longsword
@@ -558,17 +574,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d7513fa7868f4444b9578a148a80b2d6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _healthAttribute:
+  <HealthAttribute>k__BackingField:
     _value: 1000
-    _minimumValue: 0
-    _maximumValue: 1000
+    <MinimumValue>k__BackingField: 0
+    <MaximumValue>k__BackingField: 1000
   _movementSpeed: 15
   _sprintToMovementSpeedRatio: 2
   _acceleration: 1
-  _staminaAttribute:
+  <StaminaAttribute>k__BackingField:
     _value: 1000
-    _minimumValue: 0
-    _maximumValue: 1000
+    <MinimumValue>k__BackingField: 0
+    <MaximumValue>k__BackingField: 1000
+  <BaseStaminaEnhancer>k__BackingField:
+    <ValuePerUpdate>k__BackingField: 5
+    <UpdateRate>k__BackingField: 0.016
 --- !u!54 &864593601
 Rigidbody:
   m_ObjectHideFlags: 0

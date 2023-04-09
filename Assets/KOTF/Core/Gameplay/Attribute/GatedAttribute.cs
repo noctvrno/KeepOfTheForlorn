@@ -14,24 +14,16 @@ namespace KOTF.Core.Gameplay.Attribute
             get => _value;
             set
             {
-                _value = value.Clamp(_minimumValue, _maximumValue);
+                _value = value.Clamp(MinimumValue, MaximumValue);
                 ValueChangedEventHandler?.Invoke(this, EventArgs.Empty);
             }
         }
 
-        [SerializeField] private T _minimumValue;
-        public T MinimumValue
-        {
-            get => _minimumValue;
-            set => _minimumValue = value;
-        }
+        [field: SerializeField]
+        public T MinimumValue { get; set; }
 
-        [SerializeField] private T _maximumValue;
-        public T MaximumValue
-        {
-            get => _maximumValue;
-            set => _maximumValue = value;
-        }
+        [field: SerializeField]
+        public T MaximumValue { get; set; }
 
         public EventHandler ValueChangedEventHandler { get; set; }
     }

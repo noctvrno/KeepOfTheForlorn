@@ -1,46 +1,67 @@
 ﻿using System;
+using System.Collections;
+using KOTF.Core.Services;
 using UnityEngine;
 
 namespace KOTF.Core.Gameplay.Attribute
 {
     [Serializable]
-    public class AttributeModifier
+    public class AttributeDiminisher : AttributeModifierBase
     {
-        // The attribute that is being altered. The alteration can happen with a frequency, so it's best to have it as a float.
-        public IAttribute<float> Attribute { get; set; }
-
-        // The value with which the attribute is diminished.
-        [SerializeField] private float _diminishingValue;
-
-        // The frequency at which the diminishing will take place.
-        [SerializeField] private float _diminishingFrequency;
-
-        // The value with which the attribute is enhanced.
-        [SerializeField] private float _enhancingValue;
-
-        // The frequency at which the diminishing will take place.
-        [SerializeField] private float _enhancingFrequency;
-
-        public void Diminish()
+        public override void Modify()
         {
-            if (_diminishingFrequency == 0.0f)
+            if (UpdateRate == 0.0f)
             {
-                Attribute.Value -= _diminishingValue;
+                Attribute.Value -= ValuePerUpdate;
                 return;
             }
 
-            // Diminish the attribute's value over time.
+            // Modify based on UpdateRate.
+        }
+    }
+
+    [Serializable]
+    public class AttributeEnhancer : AttributeModifierBase
+    {
+        public override void Modify()
+        {
+            if (UpdateRate == 0.0f)
+            {
+                Attribute.Value += ValuePerUpdate;
+                return;
+            }
+
+            // Modify based on UpdateRate.
+            CoroutineService.Start(Update());
+        }
+
+        private IEnumerator Update()
+        {
+            while (Attribute.Value < Threshold)
+            {
+                yield return new WaitForSeconds(UpdateRate);
+                Attribute.Value += ValuePerUpdate;
+            }
+        }
+    }
+
+    [Serializable]
+    public class AttributeModifier
+    {
+        [field: SerializeField]
+        public AttributeDiminisher AttributeDiminisher { get; set; }
+
+        [field: SerializeField]
+        public AttributeEnhancer AttributeEnhancer { get; set; }
+
+        public void Diminish()
+        {
+            AttributeDiminisher.Modify();
         }
 
         public void Enhance()
         {
-            if (_enhancingFrequency == 0.0f)
-            {
-                Attribute.Value += _enhancingValue;
-                return;
-            }
-
-            // Enhance the attribute's value over time.
+            AttributeEnhancer.Modify();
         }
     }
 }

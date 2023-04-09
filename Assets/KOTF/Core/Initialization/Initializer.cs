@@ -12,6 +12,7 @@ namespace KOTF.Core.Initialization
             var serviceProvider = ServiceProvider.GetInstance();
             serviceProvider.RegisterService<EquipmentService>();
             serviceProvider.RegisterService<CharacterColliderService>();
+            serviceProvider.RegisterService<CoroutineService>();
 
             serviceProvider.Get<EquipmentService>().Init<Weapon>();
         }

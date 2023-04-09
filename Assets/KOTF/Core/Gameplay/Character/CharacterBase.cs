@@ -11,9 +11,8 @@ namespace KOTF.Core.Gameplay.Character
     public abstract class CharacterBase : KotfGameObject, IAggressive
     {
         #region Serializable fields
-        [Header("Stats")]
-        [SerializeField] private GatedAttribute<float> _healthAttribute;
-        public GatedAttribute<float> HealthAttribute => _healthAttribute;
+        [field: SerializeField]
+        public GatedAttribute<float> HealthAttribute { get; private set; }
         #endregion
 
         #region Object references
