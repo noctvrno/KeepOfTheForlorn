@@ -29,7 +29,7 @@ namespace KOTF.Core.Gameplay.Character
         public GatedAttribute<float> StaminaAttribute { get; private set; }
 
         [field: SerializeField]
-        public UnrestrictedAttributeEnhancer BaseStaminaEnhancer { get; private set; }
+        public AttributeEnhancer BaseStaminaEnhancer { get; private set; }
         #endregion
 
         // These fields should be readonly but Unity does not support their usage.
@@ -74,7 +74,7 @@ namespace KOTF.Core.Gameplay.Character
 
             _characterController = GetComponent<CharacterController>();
 
-            BaseStaminaEnhancer.Initialize(this, StaminaAttribute);
+            BaseStaminaEnhancer.Initialize(ServiceProvider.Get<CoroutineService>(), StaminaAttribute, StaminaAttribute.MaximumValue);
 
             // Update the Animator to make sure that all references and properties are correct.
             Animator.runtimeAnimatorController = new AnimatorOverrideController(Animator.runtimeAnimatorController);

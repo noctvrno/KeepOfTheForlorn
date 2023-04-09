@@ -1,23 +1,10 @@
 ﻿using System;
 using System.Collections;
-using KOTF.Core.Wrappers;
+using KOTF.Core.Services;
 using UnityEngine;
 
 namespace KOTF.Core.Gameplay.Attribute
 {
-    [Serializable]
-    public class UnrestrictedAttributeEnhancer : AttributeEnhancer
-    {
-        public new GatedAttribute<float> Attribute { get; set; } // Unity does not support covariant return types...
-
-        public void Initialize(KotfGameObject host, GatedAttribute<float> attribute) // Unity does not support covariant parameter types...
-        {
-            Host = host;
-            Attribute = attribute;
-            Threshold = Attribute.MaximumValue;
-        }
-    }
-
     [Serializable]
     public class AttributeDiminisher : AttributeModifierBase
     {
@@ -45,13 +32,16 @@ namespace KOTF.Core.Gameplay.Attribute
             }
 
             // Modify based on UpdateRate.
-            Host.StartCoroutine(Update());
+            CoroutineService.Start(Update());
         }
 
         private IEnumerator Update()
         {
-            yield return new WaitForSeconds(UpdateRate);
-            Attribute.Value += ValuePerUpdate;
+            while (Attribute.Value < Threshold)
+            {
+                yield return new WaitForSeconds(UpdateRate);
+                Attribute.Value += ValuePerUpdate;
+            }
         }
     }
 
