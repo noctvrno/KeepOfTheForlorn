@@ -29,7 +29,7 @@ namespace KOTF.Core.Gameplay.Character
         public GatedAttribute<float> StaminaAttribute { get; private set; }
 
         [field: SerializeField]
-        public AttributeEnhancer BaseStaminaEnhancer { get; private set; }
+        public AnalogAttributeModifier BaseStaminaEnhancer { get; private set; }
         #endregion
 
         // These fields should be readonly but Unity does not support their usage.
@@ -42,6 +42,7 @@ namespace KOTF.Core.Gameplay.Character
 
         private CharacterController _characterController;
         private EquipmentService _equipmentService;
+        private AttributeUpdaterService _attributeUpdaterService;
 
         public ChainAttackHandler ChainAttackHandler { get; private set; }
 
@@ -57,6 +58,8 @@ namespace KOTF.Core.Gameplay.Character
 
             _equipmentService = ServiceProvider.Get<EquipmentService>();
             _equipmentService.AttachEquipmentTo<Weapon>(WeaponPrefabNames.LONGSWORD, gameObject);
+
+            _attributeUpdaterService = ServiceProvider.Get<AttributeUpdaterService>();
         }
 
         protected override void InitializeFields()
@@ -74,7 +77,7 @@ namespace KOTF.Core.Gameplay.Character
 
             _characterController = GetComponent<CharacterController>();
 
-            BaseStaminaEnhancer.Initialize(ServiceProvider.Get<CoroutineService>(), StaminaAttribute, StaminaAttribute.MaximumValue);
+            BaseStaminaEnhancer.Initialize(StaminaAttribute, StaminaAttribute.MaximumValue);
 
             // Update the Animator to make sure that all references and properties are correct.
             Animator.runtimeAnimatorController = new AnimatorOverrideController(Animator.runtimeAnimatorController);
@@ -126,7 +129,7 @@ namespace KOTF.Core.Gameplay.Character
         public override void OnEnterAttackWindow()
         {
             base.OnEnterAttackWindow();
-            WieldedWeapon.StaminaDiminisher.Modify();
+            //WieldedWeapon.StaminaDiminisher.Modify();
         }
 
         public override void OnExitAttackWindow()
@@ -143,7 +146,7 @@ namespace KOTF.Core.Gameplay.Character
         public override void OnExitAttackAnimation()
         {
             ChainAttackHandler.ResetChain();
-            BaseStaminaEnhancer.Modify();
+            _attributeUpdaterService.Enhance(BaseStaminaEnhancer);
         }
     }
 }
