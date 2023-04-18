@@ -28,7 +28,7 @@ namespace KOTF.Core.Gameplay.Equipment
         public int ChainAttackFrame { get; private set; }
 
         [field: SerializeField]
-        public AttributeDiminisher StaminaDiminisher { get; private set; }
+        public DiscreteAttributeModifier StaminaDiminisher { get; private set; }
 
         private void Start()
         {
@@ -43,7 +43,7 @@ namespace KOTF.Core.Gameplay.Equipment
             if (Owner is not MainPlayerCharacter player)
                 return;
 
-            StaminaDiminisher.Initialize(serviceProvider.Get<CoroutineService>(), player.StaminaAttribute);
+            StaminaDiminisher.Initialize(player.StaminaAttribute);
         }
 
         private void OnCollisionEnter(Collision collision)

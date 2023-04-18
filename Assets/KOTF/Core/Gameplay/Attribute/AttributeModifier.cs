@@ -1,67 +1,54 @@
 ﻿using System;
-using System.Collections;
-using KOTF.Core.Services;
 using UnityEngine;
 
 namespace KOTF.Core.Gameplay.Attribute
 {
     [Serializable]
-    public class AttributeDiminisher : AttributeModifierBase
+    public class AnalogAttributeModifier : IAttributeModifier
     {
-        public override void Modify()
-        {
-            if (UpdateRate == 0.0f)
-            {
-                Attribute.Value -= ValuePerUpdate;
-                return;
-            }
+        public IAttribute<float> Attribute { get; private set; }
 
-            // Modify based on UpdateRate.
+        public float Threshold { get; set; }
+
+        [field: SerializeField]
+        [Tooltip("The value that is being changed per each update.")]
+        public float Value { get; set; }
+
+        [field: SerializeField]
+        [Tooltip("The time interval between each update. [ms]\nA value of 0 means that the update will happen instantly.")]
+        public float Rate { get; set; }
+
+        public void Initialize(IAttribute<float> attribute)
+        {
+            Attribute = attribute;
+        }
+
+        public void Initialize(IAttribute<float> attribute, float threshold)
+        {
+            Initialize(attribute);
+            Threshold = threshold;
         }
     }
 
     [Serializable]
-    public class AttributeEnhancer : AttributeModifierBase
+    public class DiscreteAttributeModifier : IAttributeModifier
     {
-        public override void Modify()
-        {
-            if (UpdateRate == 0.0f)
-            {
-                Attribute.Value += ValuePerUpdate;
-                return;
-            }
+        public IAttribute<float> Attribute { get; private set; }
 
-            // Modify based on UpdateRate.
-            CoroutineService.Start(Update());
-        }
+        [field: SerializeField]
+        public float Value { get; set; }
 
-        private IEnumerator Update()
+        public void Initialize(IAttribute<float> attribute)
         {
-            while (Attribute.Value < Threshold)
-            {
-                yield return new WaitForSeconds(UpdateRate);
-                Attribute.Value += ValuePerUpdate;
-            }
+            Attribute = attribute;
         }
     }
 
-    [Serializable]
-    public class AttributeModifier
+    public interface IAttributeModifier
     {
-        [field: SerializeField]
-        public AttributeDiminisher AttributeDiminisher { get; set; }
+        IAttribute<float> Attribute { get; }
+        float Value { get; set; }
 
-        [field: SerializeField]
-        public AttributeEnhancer AttributeEnhancer { get; set; }
-
-        public void Diminish()
-        {
-            AttributeDiminisher.Modify();
-        }
-
-        public void Enhance()
-        {
-            AttributeEnhancer.Modify();
-        }
+        void Initialize(IAttribute<float> attribute);
     }
 }
