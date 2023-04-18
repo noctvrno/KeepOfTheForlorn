@@ -48,7 +48,7 @@ namespace KOTF.Core.Services
         private static void DiscreteUpdate(IAttributeModifier attributeModifier,
             in AttributeUpdateType attributeUpdateType)
         {
-            attributeModifier.Value = attributeUpdateType switch
+            attributeModifier.Attribute.Value = attributeUpdateType switch
             {
                 AttributeUpdateType.Enhance => attributeModifier.Attribute.Value + attributeModifier.Value,
                 AttributeUpdateType.Diminish => attributeModifier.Attribute.Value - attributeModifier.Value,

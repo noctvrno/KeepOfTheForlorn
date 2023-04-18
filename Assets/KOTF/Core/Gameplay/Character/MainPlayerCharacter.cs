@@ -129,7 +129,7 @@ namespace KOTF.Core.Gameplay.Character
         public override void OnEnterAttackWindow()
         {
             base.OnEnterAttackWindow();
-            //WieldedWeapon.StaminaDiminisher.Modify();
+            _attributeUpdaterService.Diminish(WieldedWeapon.StaminaDiminisher);
         }
 
         public override void OnExitAttackWindow()

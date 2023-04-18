@@ -13,6 +13,7 @@ namespace KOTF.Core.Initialization
             serviceProvider.RegisterService<EquipmentService>();
             serviceProvider.RegisterService<CharacterColliderService>();
             serviceProvider.RegisterService<CoroutineService>();
+            serviceProvider.RegisterService<AttributeUpdaterService>();
 
             serviceProvider.Get<EquipmentService>().Init<Weapon>();
         }
