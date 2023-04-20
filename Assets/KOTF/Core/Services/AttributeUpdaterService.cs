@@ -38,12 +38,26 @@ namespace KOTF.Core.Services
         private static IEnumerator AnalogUpdate(AnalogAttributeModifier analogAttributeModifier,
             AttributeUpdateType attributeUpdateType)
         {
-            while (analogAttributeModifier.Attribute.Value < analogAttributeModifier.Threshold)
+            while (GetAnalogUpdateCondition(analogAttributeModifier, attributeUpdateType))
             {
                 yield return new WaitForSeconds(analogAttributeModifier.Rate);
                 DiscreteUpdate(analogAttributeModifier, attributeUpdateType);
             }
         }
+
+        private static bool GetAnalogUpdateCondition(AnalogAttributeModifier analogAttributeModifier, AttributeUpdateType attributeUpdateType)
+        {
+            return attributeUpdateType switch
+            {
+                AttributeUpdateType.Enhance => analogAttributeModifier.Attribute.Value <
+                                               analogAttributeModifier.Threshold,
+                AttributeUpdateType.Diminish => analogAttributeModifier.Attribute.Value >
+                                                analogAttributeModifier.Threshold,
+                _ => throw new ArgumentException(
+                    $"{attributeUpdateType} not part of enum {nameof(AttributeUpdateType)}")
+            };
+        }
+
 
         private static void DiscreteUpdate(IAttributeModifier attributeModifier,
             in AttributeUpdateType attributeUpdateType)
