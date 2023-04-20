@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using KOTF.Core.Gameplay.Attribute;
 using KOTF.Core.Gameplay.Equipment;
 using UnityEngine;
@@ -14,16 +13,14 @@ namespace KOTF.Core.Gameplay.Character
     public class MainPlayerCharacter : CharacterBase, IChainCapable
     {
         #region Serializable fields
-        [Header("Movement")]
-        [SerializeField]
-        [Tooltip("The movement speed value. This controls how fast the character walks.")]
-        private float _movementSpeed;
-        [SerializeField]
-        [Tooltip("The ratio of the movement speed while sprinting to walking. If the ratio is 2.0, that means that sprinting will be twice as fast as walking.")]
-        private float _sprintToMovementSpeedRatio;
-        [SerializeField]
-        [Tooltip("How fast the movement speed reaches the sprinting speed.")]
-        private float _acceleration;
+        [field: SerializeField]
+        public GatedAttribute<float> MovementSpeedAttribute { get; private set; }
+
+        [field: SerializeField]
+        public AnalogAttributeModifier MovementSpeedEnhancer { get; private set; }
+
+        [field: SerializeField]
+        public AnalogAttributeModifier MovementSpeedDiminisher { get; private set; }
 
         [field: SerializeField]
         public GatedAttribute<float> StaminaAttribute { get; private set; }
@@ -31,10 +28,6 @@ namespace KOTF.Core.Gameplay.Character
         [field: SerializeField]
         public AnalogAttributeModifier BaseStaminaEnhancer { get; private set; }
         #endregion
-
-        // These fields should be readonly but Unity does not support their usage.
-        private float _minMovementSpeed;
-        private float _maxMovementSpeed;
 
         private InputHandler _movementInput;
         private InputHandler _attackInput;
@@ -68,9 +61,6 @@ namespace KOTF.Core.Gameplay.Character
 
             InitializeInputs();
 
-            _minMovementSpeed = _movementSpeed;
-            _maxMovementSpeed = _sprintToMovementSpeedRatio * _movementSpeed;
-
             ScriptableObject.CreateInstance<HudObjectHandler>().Initialize(); // TODO: Perhaps this would be better as a service.
 
             ChainAttackHandler = new ChainAttackHandler(CharacterAnimationHandler);
@@ -78,6 +68,8 @@ namespace KOTF.Core.Gameplay.Character
             _characterController = GetComponent<CharacterController>();
 
             BaseStaminaEnhancer.Initialize(StaminaAttribute, StaminaAttribute.MaximumValue);
+            MovementSpeedEnhancer.Initialize(MovementSpeedAttribute, MovementSpeedAttribute.MaximumValue);
+            MovementSpeedDiminisher.Initialize(MovementSpeedAttribute, MovementSpeedAttribute.MinimumValue);
 
             // Update the Animator to make sure that all references and properties are correct.
             Animator.runtimeAnimatorController = new AnimatorOverrideController(Animator.runtimeAnimatorController);
@@ -104,18 +96,13 @@ namespace KOTF.Core.Gameplay.Character
 
         private Vector3 ComputeMovementVector(float longitudinalValue, float lateralValue)
         {
-            ComputeMovementSpeed();
-            Transform currentTransform = transform;
-            return (lateralValue * currentTransform.right + longitudinalValue * currentTransform.forward).ToDeltaTime() * _movementSpeed;
-        }
+            if (Convert.ToBoolean(_sprintInput.Input.ReadValue<float>()))
+                _attributeUpdaterService.Enhance(MovementSpeedEnhancer);
+            else
+                _attributeUpdaterService.Diminish(MovementSpeedDiminisher);
 
-        private void ComputeMovementSpeed()
-        {
-            _movementSpeed = Convert.ToBoolean(_sprintInput.Input.ReadValue<float>())
-                ? Mathf.Clamp(_movementSpeed + _movementSpeed * Time.deltaTime * _acceleration, _minMovementSpeed,
-                    _maxMovementSpeed)
-                : Mathf.Clamp(_movementSpeed - _movementSpeed * Time.deltaTime * _acceleration, _minMovementSpeed,
-                    _maxMovementSpeed);
+            Transform currentTransform = transform;
+            return (lateralValue * currentTransform.right + longitudinalValue * currentTransform.forward).ToDeltaTime() * MovementSpeedAttribute.Value;
         }
 
         public override void Attack()

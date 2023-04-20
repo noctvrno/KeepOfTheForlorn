@@ -11,12 +11,13 @@ namespace KOTF.Core.Gameplay.Attribute
         public float Threshold { get; set; }
 
         [field: SerializeField]
-        [Tooltip("The value that is being changed per each update.")]
+        [Tooltip("The value that is used to modify the Attribute's Value.")]
         public float Value { get; set; }
 
         [field: SerializeField]
-        [Tooltip("The time interval between each update. [ms]\nA value of 0 means that the update will happen instantly.")]
-        public float Rate { get; set; }
+        [Tooltip(
+            "The time interval between each update. [ms]\n Default value: 0.016f which corresponds to a rate of 60 Hz.")]
+        public float Rate { get; set; } = 0.016f;
 
         public void Initialize(IAttribute<float> attribute)
         {
