@@ -580,12 +580,16 @@ MonoBehaviour:
     <MaximumValue>k__BackingField: 1000
   <MovementSpeedAttribute>k__BackingField:
     _value: 15
-    <MinimumValue>k__BackingField: 15
+    <MinimumValue>k__BackingField: 7.5
     <MaximumValue>k__BackingField: 30
   <MovementSpeedEnhancer>k__BackingField:
     <Value>k__BackingField: 0.15
     <Rate>k__BackingField: 0.1
   <MovementSpeedDiminisher>k__BackingField:
+    <Value>k__BackingField: 0.15
+    <Rate>k__BackingField: 5
+    <Threshold>k__BackingField: 15
+  <AttackingMovementSpeedDiminisher>k__BackingField:
     <Value>k__BackingField: 0.15
     <Rate>k__BackingField: 0.1
   <StaminaAttribute>k__BackingField:

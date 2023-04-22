@@ -20,7 +20,10 @@ namespace KOTF.Core.Gameplay.Character
         public AnalogAttributeModifier MovementSpeedEnhancer { get; private set; }
 
         [field: SerializeField]
-        public AnalogAttributeModifier MovementSpeedDiminisher { get; private set; }
+        public AuxiliaryAnalogAttributeModifier MovementSpeedDiminisher { get; private set; }
+
+        [field: SerializeField]
+        public AnalogAttributeModifier AttackingMovementSpeedDiminisher { get; private set; }
 
         [field: SerializeField]
         public GatedAttribute<float> StaminaAttribute { get; private set; }
@@ -69,7 +72,8 @@ namespace KOTF.Core.Gameplay.Character
 
             BaseStaminaEnhancer.Initialize(StaminaAttribute, StaminaAttribute.MaximumValue);
             MovementSpeedEnhancer.Initialize(MovementSpeedAttribute, MovementSpeedAttribute.MaximumValue);
-            MovementSpeedDiminisher.Initialize(MovementSpeedAttribute, MovementSpeedAttribute.MinimumValue);
+            MovementSpeedDiminisher.Initialize(MovementSpeedAttribute);
+            AttackingMovementSpeedDiminisher.Initialize(MovementSpeedAttribute, MovementSpeedAttribute.MinimumValue);
 
             // Update the Animator to make sure that all references and properties are correct.
             Animator.runtimeAnimatorController = new AnimatorOverrideController(Animator.runtimeAnimatorController);
@@ -111,6 +115,7 @@ namespace KOTF.Core.Gameplay.Character
                 return;
 
             ChainAttackHandler.Chain();
+            _attributeUpdaterService.Diminish(AttackingMovementSpeedDiminisher);
         }
 
         public override void OnEnterAttackWindow()
