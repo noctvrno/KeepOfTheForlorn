@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using KOTF.Core.Gameplay.Attribute;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace KOTF.Core.Services
@@ -57,7 +58,6 @@ namespace KOTF.Core.Services
                     $"{attributeUpdateType} not part of enum {nameof(AttributeUpdateType)}")
             };
         }
-
 
         private static void DiscreteUpdate(IAttributeModifier attributeModifier,
             in AttributeUpdateType attributeUpdateType)

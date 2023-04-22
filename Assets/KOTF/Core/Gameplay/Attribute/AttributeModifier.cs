@@ -4,11 +4,18 @@ using UnityEngine;
 namespace KOTF.Core.Gameplay.Attribute
 {
     [Serializable]
+    public class AuxiliaryAnalogAttributeModifier : AnalogAttributeModifier
+    {
+        [field: SerializeField]
+        public override float Threshold { get; set; }
+    }
+
+    [Serializable]
     public class AnalogAttributeModifier : IAttributeModifier
     {
         public IAttribute<float> Attribute { get; private set; }
 
-        public float Threshold { get; set; }
+        public virtual float Threshold { get; set; }
 
         [field: SerializeField]
         [Tooltip("The value that is used to modify the Attribute's Value.")]
