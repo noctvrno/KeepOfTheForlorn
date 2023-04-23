@@ -13,8 +13,10 @@ namespace KOTF.Core.Gameplay.Attribute
     [Serializable]
     public class AnalogAttributeModifier : IAttributeModifier
     {
+        public Guid Guid { get; } = new();
         public IAttribute<float> Attribute { get; private set; }
 
+        [field: NonSerialized]
         public virtual float Threshold { get; set; }
 
         [field: SerializeField]
@@ -41,6 +43,7 @@ namespace KOTF.Core.Gameplay.Attribute
     [Serializable]
     public class DiscreteAttributeModifier : IAttributeModifier
     {
+        public Guid Guid { get; } = new();
         public IAttribute<float> Attribute { get; private set; }
 
         [field: SerializeField]
@@ -54,6 +57,7 @@ namespace KOTF.Core.Gameplay.Attribute
 
     public interface IAttributeModifier
     {
+        Guid Guid { get; }
         IAttribute<float> Attribute { get; }
         float Value { get; set; }
 
