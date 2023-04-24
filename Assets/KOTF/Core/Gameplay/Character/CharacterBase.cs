@@ -63,16 +63,10 @@ namespace KOTF.Core.Gameplay.Character
         protected virtual void Update()
         {
             Move();
-            Attack();
         }
 
-        protected virtual void FixedUpdate()
-        {
-
-        }
-
-        public abstract void Move();
-        public abstract void Attack();
+        protected abstract void Move();
+        protected abstract void Attack();
 
         public virtual void Die()
         {
