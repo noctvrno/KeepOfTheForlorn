@@ -17,6 +17,24 @@ namespace KOTF.Core.Input
             Input = new InputAction();
         }
 
+        public InputHandler WithStartedCallback(Action<InputAction.CallbackContext> contextAction)
+        {
+            Input.started += contextAction;
+            return this;
+        }
+
+        public InputHandler WithPerformedCallback(Action<InputAction.CallbackContext> contextAction)
+        {
+            Input.performed += contextAction;
+            return this;
+        }
+
+        public InputHandler WithCancelledCallback(Action<InputAction.CallbackContext> contextAction)
+        {
+            Input.canceled += contextAction;
+            return this;
+        }
+
         public void OnEnable()
         {
             Input.Enable();

@@ -33,8 +33,6 @@ namespace KOTF.Core.Gameplay.Character
         #endregion
 
         private InputHandler _movementInput;
-        private InputHandler _attackInput;
-        private InputHandler _sprintInput;
 
         private CharacterController _characterController;
         private EquipmentService _equipmentService;
@@ -82,8 +80,11 @@ namespace KOTF.Core.Gameplay.Character
         private void InitializeInputs()
         {
             _movementInput = InputFactory.GetInput(ActionType.Movement);
-            _attackInput = InputFactory.GetInput(ActionType.Attack);
-            _sprintInput = InputFactory.GetInput(ActionType.Sprint);
+            InputFactory.GetInput(ActionType.Attack)
+                .WithPerformedCallback(_ => Attack());
+            InputFactory.GetInput(ActionType.Sprint)
+                .WithStartedCallback(_ => BeginSprint())
+                .WithPerformedCallback(_ => EndSprint());
         }
 
         public override void Move()
@@ -98,22 +99,24 @@ namespace KOTF.Core.Gameplay.Character
             _characterController.Move(new Vector3(computedMovementVector.x, 0.0f, computedMovementVector.z));
         }
 
+        private void BeginSprint()
+        {
+            _attributeUpdaterService.Enhance(MovementSpeedEnhancer, MovementSpeedDiminisher);
+        }
+
+        private void EndSprint()
+        {
+            _attributeUpdaterService.Diminish(MovementSpeedDiminisher, MovementSpeedEnhancer);
+        }
+
         private Vector3 ComputeMovementVector(float longitudinalValue, float lateralValue)
         {
-            if (Convert.ToBoolean(_sprintInput.Input.ReadValue<float>()))
-                _attributeUpdaterService.Enhance(MovementSpeedEnhancer);
-            else
-                _attributeUpdaterService.Diminish(MovementSpeedDiminisher);
-
             Transform currentTransform = transform;
             return (lateralValue * currentTransform.right + longitudinalValue * currentTransform.forward).ToDeltaTime() * MovementSpeedAttribute.Value;
         }
 
-        public override void Attack()
+        protected override void Attack()
         {
-            if (!Convert.ToBoolean(_attackInput.Input.ReadValue<float>()))
-                return;
-
             ChainAttackHandler.Chain();
             _attributeUpdaterService.Diminish(AttackingMovementSpeedDiminisher);
         }

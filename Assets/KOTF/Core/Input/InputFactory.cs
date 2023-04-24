@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Interactions;
 
 namespace KOTF.Core.Input
 {
@@ -15,14 +17,14 @@ namespace KOTF.Core.Input
 
     public static class InputFactory
     {
-        private static Dictionary<ActionType, InputHandler> _inputTypeToHandler = new();
+        private static readonly Dictionary<ActionType, InputHandler> _inputTypeToHandler = new();
 
         public static void Create()
         {
             foreach (ActionType actionType in Enum.GetValues(typeof(ActionType)))
             {
-                InputHandler inputHandler = ScriptableObject.CreateInstance<InputHandler>();
-                inputHandler.Input = new();
+                var inputHandler = ScriptableObject.CreateInstance<InputHandler>();
+                inputHandler.Input = new InputAction();
                 switch (actionType)
                 {
                     case ActionType.Movement:
@@ -33,10 +35,12 @@ namespace KOTF.Core.Input
                             .With("Right", GetKeyboardBinding("d"));
                         break;
                     case ActionType.Attack:
-                        inputHandler.Input.AddBinding($"{GetMouseBinding("leftButton")}");
+                        inputHandler.Input.AddBinding($"{GetMouseBinding("leftButton")}")
+                            .WithInteraction($"press(behavior={(int)PressBehavior.PressOnly})");
                         break;
                     case ActionType.Sprint:
-                        inputHandler.Input.AddBinding($"{GetKeyboardBinding("leftshift")}");
+                        inputHandler.Input.AddBinding($"{GetKeyboardBinding("leftshift")}")
+                            .WithInteraction($"press(behavior={(int)PressBehavior.ReleaseOnly})");
                         break;
                 }
 
