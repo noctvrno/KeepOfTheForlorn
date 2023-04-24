@@ -202,7 +202,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh24666
+  m_Name: pb_Mesh24686
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -583,15 +583,14 @@ MonoBehaviour:
     <MinimumValue>k__BackingField: 7.5
     <MaximumValue>k__BackingField: 30
   <MovementSpeedEnhancer>k__BackingField:
-    <Value>k__BackingField: 0.15
+    <Value>k__BackingField: 3
     <Rate>k__BackingField: 0.1
   <MovementSpeedDiminisher>k__BackingField:
-    <Value>k__BackingField: 0.15
-    <Rate>k__BackingField: 5
+    <Value>k__BackingField: 3
+    <Rate>k__BackingField: 0.1
     <Threshold>k__BackingField: 15
   <AttackingMovementSpeedDiminisher>k__BackingField:
-    <Value>k__BackingField: 0.15
-    <Rate>k__BackingField: 0.1
+    <Value>k__BackingField: 7.5
   <StaminaAttribute>k__BackingField:
     _value: 1000
     <MinimumValue>k__BackingField: 0

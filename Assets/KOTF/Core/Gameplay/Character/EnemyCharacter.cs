@@ -27,7 +27,7 @@ namespace KOTF.Core.Gameplay.Character
             _navMeshAgent = GetComponent<NavMeshAgent>();
         }
 
-        public override void Move()
+        protected override void Move()
         {
             Vector3 targetPosition = _mainPlayerCharacter.transform.position;
 
@@ -36,7 +36,7 @@ namespace KOTF.Core.Gameplay.Character
                 _navMeshAgent.SetDestination(_mainPlayerCharacter.transform.position);
         }
 
-        public override void Attack()
+        protected override void Attack()
         {
             //TriggerAnimation(true);
         }
