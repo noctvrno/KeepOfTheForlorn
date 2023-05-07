@@ -76,21 +76,26 @@ namespace KOTF.Core.Services
         private static IEnumerator AnalogUpdate(AnalogAttributeModifier analogAttributeModifier,
             AttributeUpdateType attributeUpdateType)
         {
-            while (GetAnalogUpdateCondition(analogAttributeModifier, attributeUpdateType))
+            while (IsUpdateValid(analogAttributeModifier, attributeUpdateType))
             {
                 yield return new WaitForSeconds(analogAttributeModifier.Rate);
                 DiscreteUpdate(analogAttributeModifier, attributeUpdateType);
             }
         }
 
-        private static bool GetAnalogUpdateCondition(AnalogAttributeModifier analogAttributeModifier, AttributeUpdateType attributeUpdateType)
+        private static bool IsUpdateValid(IAttributeModifier attributeModifier,
+            AttributeUpdateType attributeUpdateType)
         {
             return attributeUpdateType switch
             {
-                AttributeUpdateType.Enhance => analogAttributeModifier.Attribute.Value <
-                                               analogAttributeModifier.Threshold,
-                AttributeUpdateType.Diminish => analogAttributeModifier.Attribute.Value >
-                                                analogAttributeModifier.Threshold,
+                AttributeUpdateType.Enhance => attributeModifier.Attribute.Value <
+                                               (attributeModifier.Threshold.Equals(0.0f)
+                                                   ? attributeModifier.Attribute.MaximumValue
+                                                   : attributeModifier.Threshold),
+                AttributeUpdateType.Diminish => attributeModifier.Attribute.Value >
+                                                (attributeModifier.Threshold.Equals(0.0f)
+                                                    ? attributeModifier.Attribute.MinimumValue
+                                                    : attributeModifier.Threshold),
                 _ => throw new ArgumentException(
                     $"{attributeUpdateType} not part of enum {nameof(AttributeUpdateType)}")
             };
@@ -101,8 +106,14 @@ namespace KOTF.Core.Services
         {
             attributeModifier.Attribute.Value = attributeUpdateType switch
             {
-                AttributeUpdateType.Enhance => attributeModifier.Attribute.Value + attributeModifier.Value,
-                AttributeUpdateType.Diminish => attributeModifier.Attribute.Value - attributeModifier.Value,
+                AttributeUpdateType.Enhance => Mathf.Min(attributeModifier.Attribute.Value + attributeModifier.Value,
+                    attributeModifier.Threshold.Equals(0.0f)
+                        ? attributeModifier.Attribute.MaximumValue
+                        : attributeModifier.Threshold),
+                AttributeUpdateType.Diminish => Mathf.Max(attributeModifier.Attribute.Value - attributeModifier.Value,
+                    attributeModifier.Threshold.Equals(0.0f)
+                        ? attributeModifier.Attribute.MinimumValue
+                        : attributeModifier.Threshold),
                 _ => throw new ArgumentException(
                     $"{attributeUpdateType} not part of enum {nameof(AttributeUpdateType)}")
             };
