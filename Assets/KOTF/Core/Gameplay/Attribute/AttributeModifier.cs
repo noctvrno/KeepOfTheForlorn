@@ -14,7 +14,7 @@ namespace KOTF.Core.Gameplay.Attribute
     public class AnalogAttributeModifier : IAttributeModifier
     {
         public Guid Guid { get; } = new();
-        public IAttribute<float> Attribute { get; private set; }
+        public GatedAttribute<float> Attribute { get; private set; }
 
         [field: NonSerialized]
         public virtual float Threshold { get; set; }
@@ -28,14 +28,14 @@ namespace KOTF.Core.Gameplay.Attribute
             "The time interval between each update. [ms]\n Default value: 0.016f which corresponds to a rate of 60 Hz.")]
         public float Rate { get; set; } = 0.016f;
 
-        public void Initialize(IAttribute<float> attribute)
+        public void Initialize(GatedAttribute<float> attribute)
         {
             Attribute = attribute;
         }
 
-        public void Initialize(IAttribute<float> attribute, float threshold)
+        public void Initialize(GatedAttribute<float> attribute, float threshold)
         {
-            Initialize(attribute);
+            Attribute = attribute;
             Threshold = threshold;
         }
     }
@@ -44,23 +44,31 @@ namespace KOTF.Core.Gameplay.Attribute
     public class DiscreteAttributeModifier : IAttributeModifier
     {
         public Guid Guid { get; } = new();
-        public IAttribute<float> Attribute { get; private set; }
+        public GatedAttribute<float> Attribute { get; private set; }
 
         [field: SerializeField]
         public float Value { get; set; }
 
-        public void Initialize(IAttribute<float> attribute)
+        [field: NonSerialized]
+        public float Threshold { get; set; }
+
+        public void Initialize(GatedAttribute<float> attribute)
         {
             Attribute = attribute;
+        }
+
+        public void Initialize(GatedAttribute<float> attribute, float threshold)
+        {
+            Attribute = attribute;
+            Threshold = threshold;
         }
     }
 
     public interface IAttributeModifier
     {
         Guid Guid { get; }
-        IAttribute<float> Attribute { get; }
+        GatedAttribute<float> Attribute { get; }
         float Value { get; set; }
-
-        void Initialize(IAttribute<float> attribute);
+        float Threshold { get; set; }
     }
 }

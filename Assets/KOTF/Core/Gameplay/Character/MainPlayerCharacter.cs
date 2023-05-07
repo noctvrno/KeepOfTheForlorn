@@ -68,8 +68,8 @@ namespace KOTF.Core.Gameplay.Character
 
             _characterController = GetComponent<CharacterController>();
 
-            BaseStaminaEnhancer.Initialize(StaminaAttribute, StaminaAttribute.MaximumValue);
-            MovementSpeedEnhancer.Initialize(MovementSpeedAttribute, MovementSpeedAttribute.MaximumValue);
+            BaseStaminaEnhancer.Initialize(StaminaAttribute);
+            MovementSpeedEnhancer.Initialize(MovementSpeedAttribute);
             MovementSpeedDiminisher.Initialize(MovementSpeedAttribute);
             AttackingMovementSpeedDiminisher.Initialize(MovementSpeedAttribute);
 
