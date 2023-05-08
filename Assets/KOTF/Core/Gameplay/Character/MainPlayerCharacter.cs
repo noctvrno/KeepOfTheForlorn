@@ -23,7 +23,7 @@ namespace KOTF.Core.Gameplay.Character
         public AuxiliaryAnalogAttributeModifier MovementSpeedDiminisher { get; private set; }
 
         [field: SerializeField]
-        public DiscreteAttributeModifier AttackingMovementSpeedDiminisher { get; private set; }
+        public DiscreteAttributeModifier AttackingMovementSpeedModifier { get; private set; }
 
         [field: SerializeField]
         public GatedAttribute<float> StaminaAttribute { get; private set; }
@@ -71,7 +71,7 @@ namespace KOTF.Core.Gameplay.Character
             BaseStaminaEnhancer.Initialize(StaminaAttribute);
             MovementSpeedEnhancer.Initialize(MovementSpeedAttribute);
             MovementSpeedDiminisher.Initialize(MovementSpeedAttribute);
-            AttackingMovementSpeedDiminisher.Initialize(MovementSpeedAttribute);
+            AttackingMovementSpeedModifier.Initialize(MovementSpeedAttribute);
 
             // Update the Animator to make sure that all references and properties are correct.
             Animator.runtimeAnimatorController = new AnimatorOverrideController(Animator.runtimeAnimatorController);
@@ -115,10 +115,10 @@ namespace KOTF.Core.Gameplay.Character
             return (lateralValue * currentTransform.right + longitudinalValue * currentTransform.forward).ToDeltaTime() * MovementSpeedAttribute.Value;
         }
 
-        protected override void Attack()
+        protected virtual void Attack()
         {
             ChainAttackHandler.Chain();
-            _attributeUpdaterService.Diminish(AttackingMovementSpeedDiminisher);
+            _attributeUpdaterService.Diminish(AttackingMovementSpeedModifier);
         }
 
         public override void OnEnterAttackWindow()
@@ -142,7 +142,7 @@ namespace KOTF.Core.Gameplay.Character
         {
             ChainAttackHandler.ResetChain();
             _attributeUpdaterService.Enhance(BaseStaminaEnhancer);
-            _attributeUpdaterService.Enhance(AttackingMovementSpeedDiminisher);
+            _attributeUpdaterService.Enhance(AttackingMovementSpeedModifier);
         }
     }
 }

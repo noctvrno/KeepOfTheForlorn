@@ -66,7 +66,6 @@ namespace KOTF.Core.Gameplay.Character
         }
 
         protected abstract void Move();
-        protected abstract void Attack();
 
         public virtual void Die()
         {

@@ -230,7 +230,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9cadc0ef66ce98e4d98c411668c59572, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _healthPoints: 1000
+  <HealthAttribute>k__BackingField:
+    _value: 0
+    <MinimumValue>k__BackingField: 0
+    <MaximumValue>k__BackingField: 0
   _aggroRadius: 20
 --- !u!195 &1138043504
 NavMeshAgent:
@@ -264,7 +267,7 @@ Animator:
   m_GameObject: {fileID: 2195016408464887703}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 88096887cb8682745a37488687578004, type: 2}
+  m_Controller: {fileID: 9100000, guid: 618043e6ed5d3564e85fb5b4598d9f1d, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
