@@ -36,21 +36,26 @@ namespace KOTF.Core.Input
                         break;
                     case ActionType.Sprint:
                         inputHandler.Input.AddBinding($"{GetKeyboardBinding("leftshift")}")
-                            .WithInteraction($"press(behavior={(int)PressBehavior.ReleaseOnly})");
+                            .WithInteraction(GetPressInteractionString(PressBehavior.ReleaseOnly));
                         break;
                     case ActionType.Attack:
                         inputHandler.Input.AddBinding($"{GetMouseBinding("leftButton")}")
-                            .WithInteraction($"press(behavior={(int)PressBehavior.PressOnly})");
+                            .WithInteraction(GetPressInteractionString(PressBehavior.PressOnly));
                         break;
                     case ActionType.Block:
                         inputHandler.Input.AddBinding($"{GetMouseBinding("rightButton")}")
-                            .WithInteraction($"press(behavior={(int)PressBehavior.ReleaseOnly})");
+                            .WithInteraction(GetPressInteractionString(PressBehavior.ReleaseOnly));
                         break;
                 }
 
                 inputHandler.OnEnable();
                 _inputTypeToHandler.Add(actionType, inputHandler);
             }
+        }
+
+        private static string GetPressInteractionString(PressBehavior pressBehavior)
+        {
+            return $"press(behavior={(int)pressBehavior})";
         }
 
         private static string GetKeyboardBinding(string key)

@@ -120,7 +120,7 @@ namespace KOTF.Core.Gameplay.Character
             return (lateralValue * currentTransform.right + longitudinalValue * currentTransform.forward).ToDeltaTime() * MovementSpeedAttribute.Value;
         }
 
-        protected virtual void Attack()
+        protected override void Attack()
         {
             ChainAttackHandler.Chain();
             _attributeUpdaterService.Diminish(AttackingMovementSpeedModifier);

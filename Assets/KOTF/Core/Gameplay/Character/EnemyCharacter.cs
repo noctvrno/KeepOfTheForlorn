@@ -36,7 +36,7 @@ namespace KOTF.Core.Gameplay.Character
                 _navMeshAgent.SetDestination(_mainPlayerCharacter.transform.position);
         }
 
-        protected virtual void Attack()
+        protected override void Attack()
         {
             //TriggerAnimation(true);
         }
