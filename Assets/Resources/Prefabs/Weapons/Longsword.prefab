@@ -111,11 +111,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 491e2885274d48846adc571149808a37, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _baseDamage: 100
-  _chainAttackFrame: 25
-  _staminaModifier:
-    _diminishingValue: 100
-    _diminishingFrequency: 0
+  <BaseDamage>k__BackingField: 500
+  <ChainAttackFrame>k__BackingField: 15
+  <StaminaDiminisher>k__BackingField:
+    <Value>k__BackingField: 100
+  <DamageReductionAttribute>k__BackingField:
+    _value: 0.5
+    <MinimumValue>k__BackingField: 0
+    <MaximumValue>k__BackingField: 1
 --- !u!54 &-6690792629912465976
 Rigidbody:
   m_ObjectHideFlags: 0

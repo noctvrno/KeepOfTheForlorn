@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using KOTF.Core.Gameplay.Attribute;
 using UnityEngine;
 
@@ -14,6 +15,7 @@ namespace KOTF.Core.Services
     public class AttributeUpdaterService : IService
     {
         private readonly CoroutineService _coroutineService = ServiceProvider.GetInstance().Get<CoroutineService>();
+        private readonly Dictionary<IAttribute<float>, float> _disabledAttributesToValue = new();
 
         /// <summary>
         /// This method will enhance the provided <paramref name="analogAttributeModifier"/> over time.
@@ -117,6 +119,20 @@ namespace KOTF.Core.Services
                 _ => throw new ArgumentException(
                     $"{attributeUpdateType} not part of enum {nameof(AttributeUpdateType)}")
             };
+        }
+
+        public void Disable(IAttribute<float> attribute)
+        {
+            _disabledAttributesToValue.Add(attribute, attribute.Value);
+            attribute.Value = 0.0f;
+        }
+
+        public void Enable(IAttribute<float> attribute)
+        {
+            if (!_disabledAttributesToValue.TryGetValue(attribute, out var value))
+                return;
+
+            attribute.Value = value;
         }
     }
 }

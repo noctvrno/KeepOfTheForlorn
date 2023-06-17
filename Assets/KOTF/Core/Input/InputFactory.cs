@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Interactions;
@@ -12,7 +11,8 @@ namespace KOTF.Core.Input
         Idle,
         Movement,
         Sprint,
-        Attack
+        Attack,
+        Block
     }
 
     public static class InputFactory
@@ -34,19 +34,28 @@ namespace KOTF.Core.Input
                             .With("Left", GetKeyboardBinding("a"))
                             .With("Right", GetKeyboardBinding("d"));
                         break;
-                    case ActionType.Attack:
-                        inputHandler.Input.AddBinding($"{GetMouseBinding("leftButton")}")
-                            .WithInteraction($"press(behavior={(int)PressBehavior.PressOnly})");
-                        break;
                     case ActionType.Sprint:
                         inputHandler.Input.AddBinding($"{GetKeyboardBinding("leftshift")}")
-                            .WithInteraction($"press(behavior={(int)PressBehavior.ReleaseOnly})");
+                            .WithInteraction(GetPressInteractionString(PressBehavior.ReleaseOnly));
+                        break;
+                    case ActionType.Attack:
+                        inputHandler.Input.AddBinding($"{GetMouseBinding("leftButton")}")
+                            .WithInteraction(GetPressInteractionString(PressBehavior.PressOnly));
+                        break;
+                    case ActionType.Block:
+                        inputHandler.Input.AddBinding($"{GetMouseBinding("rightButton")}")
+                            .WithInteraction(GetPressInteractionString(PressBehavior.ReleaseOnly));
                         break;
                 }
 
                 inputHandler.OnEnable();
                 _inputTypeToHandler.Add(actionType, inputHandler);
             }
+        }
+
+        private static string GetPressInteractionString(PressBehavior pressBehavior)
+        {
+            return $"press(behavior={(int)pressBehavior})";
         }
 
         private static string GetKeyboardBinding(string key)

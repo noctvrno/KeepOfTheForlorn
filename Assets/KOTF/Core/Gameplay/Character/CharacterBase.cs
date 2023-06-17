@@ -18,7 +18,7 @@ namespace KOTF.Core.Gameplay.Character
         #region Object references
         public Weapon WieldedWeapon { get; private set; }
         protected ServiceProvider ServiceProvider { get; private set; }
-        protected CharacterAnimationHandler CharacterAnimationHandler { get; private set; }
+        public CharacterAnimationHandler CharacterAnimationHandler { get; private set; }
         protected CharacterColliderService CharacterColliderService { get; private set; }
         public Animator Animator { get; private set; }
         public AnimatorController AnimatorController { get; private set; }
@@ -66,6 +66,7 @@ namespace KOTF.Core.Gameplay.Character
         }
 
         protected abstract void Move();
+        protected abstract void Attack();
 
         public virtual void Die()
         {

@@ -13,7 +13,7 @@ namespace KOTF.Core.Gameplay.Attribute
     [Serializable]
     public class AnalogAttributeModifier : IAttributeModifier
     {
-        public Guid Guid { get; } = new();
+        public Guid Guid { get; } = Guid.NewGuid();
         public GatedAttribute<float> Attribute { get; private set; }
 
         [field: NonSerialized]
