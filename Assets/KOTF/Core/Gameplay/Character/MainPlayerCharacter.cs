@@ -37,6 +37,7 @@ namespace KOTF.Core.Gameplay.Character
         private CharacterController _characterController;
         private EquipmentService _equipmentService;
         private AttributeUpdaterService _attributeUpdaterService;
+        private BlockAttackHandler _blockAttackHandler;
 
         public ChainAttackHandler ChainAttackHandler { get; private set; }
 
@@ -64,6 +65,7 @@ namespace KOTF.Core.Gameplay.Character
 
             ScriptableObject.CreateInstance<HudObjectHandler>().Initialize(); // TODO: Perhaps this would be better as a service.
 
+            _blockAttackHandler = new BlockAttackHandler(_attributeUpdaterService, this);
             ChainAttackHandler = new ChainAttackHandler(CharacterAnimationHandler);
 
             _characterController = GetComponent<CharacterController>();
@@ -85,6 +87,9 @@ namespace KOTF.Core.Gameplay.Character
             InputFactory.GetInput(ActionType.Sprint)
                 .WithStartedCallback(_ => BeginSprint())
                 .WithPerformedCallback(_ => EndSprint());
+            InputFactory.GetInput(ActionType.Block)
+                .WithStartedCallback(_ => _blockAttackHandler.Block())
+                .WithPerformedCallback(_ => _blockAttackHandler.Release());
         }
 
         protected override void Move()

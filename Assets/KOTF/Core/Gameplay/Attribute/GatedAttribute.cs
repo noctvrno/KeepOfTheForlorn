@@ -8,7 +8,10 @@ namespace KOTF.Core.Gameplay.Attribute
     public class GatedAttribute<T> : IAttribute<T>
         where T : IComparable
     {
+        public Guid Id { get; } = Guid.NewGuid();
+
         [SerializeField] private T _value;
+
         public T Value
         {
             get => _value;
@@ -26,5 +29,15 @@ namespace KOTF.Core.Gameplay.Attribute
         public T MaximumValue { get; set; }
 
         public EventHandler ValueChangedEventHandler { get; set; }
+
+        protected bool Equals(GatedAttribute<T> other)
+        {
+            return Id.Equals(other.Id);
+        }
+
+        public override int GetHashCode()
+        {
+            return Id.GetHashCode();
+        }
     }
 }

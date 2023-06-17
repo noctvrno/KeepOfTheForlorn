@@ -15,6 +15,7 @@ namespace KOTF.Core.Gameplay.Equipment
     {
         private CharacterColliderService _characterColliderService;
         private Collider _collider;
+        private AttributeUpdaterService _attributeUpdaterService;
         public Collider Collider => _collider;
         public string Name { get; set; }
         public string Description { get; set; }
@@ -30,6 +31,9 @@ namespace KOTF.Core.Gameplay.Equipment
         [field: SerializeField]
         public DiscreteAttributeModifier StaminaDiminisher { get; private set; }
 
+        [field: SerializeField]
+        public GatedAttribute<float> DamageReductionAttribute { get; private set; }
+
         private void Start()
         {
             if (!TryGetComponent(out _collider))
@@ -39,11 +43,13 @@ namespace KOTF.Core.Gameplay.Equipment
 
             var serviceProvider = ServiceProvider.GetInstance();
             _characterColliderService = serviceProvider.Get<CharacterColliderService>();
+            _attributeUpdaterService = serviceProvider.Get<AttributeUpdaterService>();
 
             if (Owner is not MainPlayerCharacter player)
                 return;
 
             StaminaDiminisher.Initialize(player.StaminaAttribute);
+            _attributeUpdaterService.Disable(DamageReductionAttribute);
         }
 
         private void OnCollisionEnter(Collision collision)

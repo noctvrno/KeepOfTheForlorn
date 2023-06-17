@@ -17,10 +17,15 @@ namespace KOTF.Core.Services
 
             _registeredCollisionIds.Add(victimId);
 
-            victim.HealthAttribute.Value -= aggressorWeapon.BaseDamage;
+            victim.HealthAttribute.Value -= ComputeDamage(aggressorWeapon);
             Debug.Log($"{aggressorWeapon.Owner.name} inflicted {aggressorWeapon.BaseDamage} base damage upon {victim.gameObject.name}.");
             if (victim.HealthAttribute.Value.Equals(victim.HealthAttribute.MinimumValue))
                 victim.Die();
+        }
+
+        private static float ComputeDamage(Weapon aggressorWeapon)
+        {
+            return aggressorWeapon.BaseDamage * (1.0f - aggressorWeapon.DamageReductionAttribute.Value);
         }
 
         private bool IsRegistered(int collisionId)
