@@ -45,11 +45,12 @@ namespace KOTF.Core.Gameplay.Equipment
             _characterColliderService = serviceProvider.Get<CharacterColliderService>();
             _attributeUpdaterService = serviceProvider.Get<AttributeUpdaterService>();
 
+            _attributeUpdaterService.Disable(DamageReductionAttribute);
+
             if (Owner is not MainPlayerCharacter player)
                 return;
 
             StaminaDiminisher.Initialize(player.StaminaAttribute);
-            _attributeUpdaterService.Disable(DamageReductionAttribute);
         }
 
         private void OnCollisionEnter(Collision collision)

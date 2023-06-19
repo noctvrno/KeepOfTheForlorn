@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using KOTF.Core.Input;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -32,13 +33,16 @@ namespace KOTF.Core.Gameplay.Character
             Vector3 targetPosition = _mainPlayerCharacter.transform.position;
 
             // If the target gets inside the aggroRadius, then chase endlessly.
-            if (Vector3.Distance(targetPosition, transform.position) <= _aggroRadius)
-                _navMeshAgent.SetDestination(_mainPlayerCharacter.transform.position);
+            if (!(Vector3.Distance(targetPosition, transform.position) <= _aggroRadius))
+                return;
+
+            _navMeshAgent.SetDestination(_mainPlayerCharacter.transform.position);
+            Attack();
         }
 
         protected override void Attack()
         {
-            //TriggerAnimation(true);
+            CharacterAnimationHandler.TriggerAnimation(ActionType.Attack);
         }
 
         private void OnDrawGizmosSelected()
