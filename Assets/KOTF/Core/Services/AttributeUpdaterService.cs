@@ -123,7 +123,9 @@ namespace KOTF.Core.Services
 
         public void Disable(IAttribute<float> attribute)
         {
-            _disabledAttributesToValue.Add(attribute, attribute.Value);
+            if (!_disabledAttributesToValue.ContainsKey(attribute))
+                _disabledAttributesToValue.Add(attribute, attribute.Value);
+
             attribute.Value = 0.0f;
         }
 
