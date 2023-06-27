@@ -1,5 +1,6 @@
 ﻿using KOTF.Core.Gameplay.Attribute;
 using KOTF.Core.Gameplay.Equipment;
+using KOTF.Core.Input;
 using KOTF.Core.Services;
 using KOTF.Core.Wrappers;
 using UnityEditor;
@@ -8,18 +9,23 @@ using UnityEngine;
 
 namespace KOTF.Core.Gameplay.Character
 {
-    public abstract class CharacterBase : KotfGameObject, IAggressive
+    public abstract class CharacterBase : KotfGameObject, IAggressive, IParryCapable
     {
         #region Serializable fields
         [field: SerializeField]
         public GatedAttribute<float> HealthAttribute { get; private set; }
+
+        [field: SerializeField]
+        public virtual float ParryWindowFrames { get; private set; }
         #endregion
 
         #region Object references
         public Weapon WieldedWeapon { get; private set; }
         protected ServiceProvider ServiceProvider { get; private set; }
         public CharacterAnimationHandler CharacterAnimationHandler { get; private set; }
+        public BlockAttackHandler BlockAttackHandler { get; private set; }
         protected CharacterColliderService CharacterColliderService { get; private set; }
+        protected AttributeUpdaterService AttributeUpdaterService { get; private set; }
         public Animator Animator { get; private set; }
         public AnimatorController AnimatorController { get; private set; }
         #endregion
@@ -39,6 +45,7 @@ namespace KOTF.Core.Gameplay.Character
         {
             ServiceProvider = ServiceProvider.GetInstance();
             CharacterColliderService = ServiceProvider.Get<CharacterColliderService>();
+            AttributeUpdaterService = ServiceProvider.Get<AttributeUpdaterService>();
         }
 
         protected virtual void InitializeFields()
@@ -58,6 +65,8 @@ namespace KOTF.Core.Gameplay.Character
 
             CharacterAnimationHandler = new CharacterAnimationHandler(this);
             CharacterAnimationHandler.ValidateAnimator();
+
+            BlockAttackHandler = new BlockAttackHandler(AttributeUpdaterService, this);
         }
 
         protected virtual void Update()
@@ -67,6 +76,16 @@ namespace KOTF.Core.Gameplay.Character
 
         protected abstract void Move();
         protected abstract void Attack();
+
+        public void Parry()
+        {
+            CharacterAnimationHandler.TriggerAnimation(ActionType.Parry);
+        }
+
+        public void Parried()
+        {
+            CharacterAnimationHandler.TriggerAnimation(ActionType.Idle);
+        }
 
         public virtual void Die()
         {
@@ -88,6 +107,11 @@ namespace KOTF.Core.Gameplay.Character
         public virtual void OnExitAttackAnimation()
         {
 
+        }
+
+        public void OnExitParryWindow()
+        {
+            BlockAttackHandler.ResetParryPossibility();
         }
     }
 }

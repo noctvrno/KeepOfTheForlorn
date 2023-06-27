@@ -34,7 +34,7 @@ namespace KOTF.Core.Gameplay.Character
             _chainable = false;
         }
 
-        public void ResetChain()
+        public void ResetChainPossibility()
         {
             _chainIndex = 0;
             _chainable = true;
