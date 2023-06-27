@@ -398,6 +398,7 @@ MonoBehaviour:
     _value: 1000
     <MinimumValue>k__BackingField: 0
     <MaximumValue>k__BackingField: 1000
+  <ParryWindowFrames>k__BackingField: 15
   <MovementSpeedAttribute>k__BackingField:
     _value: 15
     <MinimumValue>k__BackingField: 7.5

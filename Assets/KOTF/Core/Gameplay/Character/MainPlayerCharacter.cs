@@ -12,6 +12,11 @@ namespace KOTF.Core.Gameplay.Character
 {
     public class MainPlayerCharacter : CharacterBase, IChainCapable
     {
+        private InputHandler _movementInput;
+
+        private CharacterController _characterController;
+        private EquipmentService _equipmentService;
+
         #region Serializable fields
         [field: SerializeField]
         public GatedAttribute<float> MovementSpeedAttribute { get; private set; }
@@ -32,13 +37,6 @@ namespace KOTF.Core.Gameplay.Character
         public AnalogAttributeModifier BaseStaminaEnhancer { get; private set; }
         #endregion
 
-        private InputHandler _movementInput;
-
-        private CharacterController _characterController;
-        private EquipmentService _equipmentService;
-        private AttributeUpdaterService _attributeUpdaterService;
-        private BlockAttackHandler _blockAttackHandler;
-
         public ChainAttackHandler ChainAttackHandler { get; private set; }
 
         protected override void Awake()
@@ -53,8 +51,6 @@ namespace KOTF.Core.Gameplay.Character
 
             _equipmentService = ServiceProvider.Get<EquipmentService>();
             _equipmentService.AttachEquipmentTo<Weapon>(WeaponPrefabNames.LONGSWORD, gameObject);
-
-            _attributeUpdaterService = ServiceProvider.Get<AttributeUpdaterService>();
         }
 
         protected override void InitializeFields()
@@ -65,7 +61,6 @@ namespace KOTF.Core.Gameplay.Character
 
             ScriptableObject.CreateInstance<HudObjectHandler>().Initialize(); // TODO: Perhaps this would be better as a service.
 
-            _blockAttackHandler = new BlockAttackHandler(_attributeUpdaterService, this);
             ChainAttackHandler = new ChainAttackHandler(CharacterAnimationHandler);
 
             _characterController = GetComponent<CharacterController>();
@@ -88,8 +83,8 @@ namespace KOTF.Core.Gameplay.Character
                 .WithStartedCallback(_ => BeginSprint())
                 .WithPerformedCallback(_ => EndSprint());
             InputFactory.GetInput(ActionType.Block)
-                .WithStartedCallback(_ => _blockAttackHandler.Block())
-                .WithPerformedCallback(_ => _blockAttackHandler.Release());
+                .WithStartedCallback(_ => BlockAttackHandler.Block())
+                .WithPerformedCallback(_ => BlockAttackHandler.Release());
         }
 
         protected override void Move()
@@ -106,12 +101,12 @@ namespace KOTF.Core.Gameplay.Character
 
         private void BeginSprint()
         {
-            _attributeUpdaterService.Enhance(MovementSpeedEnhancer, MovementSpeedDiminisher);
+            AttributeUpdaterService.Enhance(MovementSpeedEnhancer, MovementSpeedDiminisher);
         }
 
         private void EndSprint()
         {
-            _attributeUpdaterService.Diminish(MovementSpeedDiminisher, MovementSpeedEnhancer);
+            AttributeUpdaterService.Diminish(MovementSpeedDiminisher, MovementSpeedEnhancer);
         }
 
         private Vector3 ComputeMovementVector(float longitudinalValue, float lateralValue)
@@ -123,13 +118,13 @@ namespace KOTF.Core.Gameplay.Character
         protected override void Attack()
         {
             ChainAttackHandler.Chain();
-            _attributeUpdaterService.Diminish(AttackingMovementSpeedModifier);
+            AttributeUpdaterService.Diminish(AttackingMovementSpeedModifier);
         }
 
         public override void OnEnterAttackWindow()
         {
             base.OnEnterAttackWindow();
-            _attributeUpdaterService.Diminish(WieldedWeapon.StaminaDiminisher);
+            AttributeUpdaterService.Diminish(WieldedWeapon.StaminaDiminisher);
         }
 
         public override void OnExitAttackWindow()
@@ -145,9 +140,9 @@ namespace KOTF.Core.Gameplay.Character
 
         public override void OnExitAttackAnimation()
         {
-            ChainAttackHandler.ResetChain();
-            _attributeUpdaterService.Enhance(BaseStaminaEnhancer);
-            _attributeUpdaterService.Enhance(AttackingMovementSpeedModifier);
+            ChainAttackHandler.ResetChainPossibility();
+            AttributeUpdaterService.Enhance(BaseStaminaEnhancer);
+            AttributeUpdaterService.Enhance(AttackingMovementSpeedModifier);
         }
     }
 }

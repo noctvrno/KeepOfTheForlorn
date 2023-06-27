@@ -12,7 +12,8 @@ namespace KOTF.Core.Input
         Movement,
         Sprint,
         Attack,
-        Block
+        Block,
+        Parry
     }
 
     public static class InputFactory

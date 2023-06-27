@@ -26,14 +26,20 @@ namespace KOTF.Core.Services
 
         public void ValidateAnimator()
         {
-            ValidateAttackAnimator();
+            ValidateAttack();
+            ValidateParry();
         }
 
-        private void ValidateAttackAnimator()
+        private void ValidateAttack()
         {
             InitializeAnimationClips();
             ValidateTransitionConditions();
             InitializeAttackAnimationEvents();
+        }
+
+        private void ValidateParry()
+        {
+            InitializeParryAnimationEvents();
         }
 
         private void InitializeAnimationClips()
@@ -113,37 +119,53 @@ namespace KOTF.Core.Services
 
         private void InitializeAttackAnimationEvents()
         {
-            GetAnimationClips(ActionType.Attack)?.Where(x => x.ActionType == ActionType.Attack).ForEach(
-                attackAnimationClip =>
+            GetAnimationClips(ActionType.Attack)?
+                .Select(x => x.AnimationClip)
+                .ForEach(attackAnimationClip =>
                 {
-                    attackAnimationClip.AnimationClip.AddEvent(new AnimationEvent
-                    {
-                        functionName = nameof(_host.OnExitAttackAnimation),
-                        time = attackAnimationClip.AnimationClip.length
-                    });
+                    AddAnimationEvent(attackAnimationClip, nameof(_host.OnExitAttackAnimation),
+                        attackAnimationClip.length);
 
                     if (_host is not IChainCapable chainCapableCharacter)
                         return;
 
                     AnimationEvent onExitAttackWindowEvent =
-                        attackAnimationClip.AnimationClip.events.FirstOrDefault(x =>
+                        attackAnimationClip.events.FirstOrDefault(x =>
                             x.functionName.Equals(nameof(_host.OnExitAttackWindow)));
 
                     if (onExitAttackWindowEvent == null)
                         return;
 
                     float exitAttackWindowFrame =
-                        attackAnimationClip.AnimationClip.frameRate * onExitAttackWindowEvent.time;
+                        attackAnimationClip.frameRate * onExitAttackWindowEvent.time;
 
                     float chainAttackEndFrameRate =
                         exitAttackWindowFrame + chainCapableCharacter.WieldedWeapon.ChainAttackFrame;
 
-                    attackAnimationClip.AnimationClip.AddEvent(new AnimationEvent
-                    {
-                        functionName = nameof(chainCapableCharacter.OnExitChainPossibility),
-                        time = chainAttackEndFrameRate / attackAnimationClip.AnimationClip.frameRate
-                    });
+                    AddAnimationEvent(attackAnimationClip,
+                        nameof(chainCapableCharacter.OnExitChainPossibility),
+                        chainAttackEndFrameRate / attackAnimationClip.frameRate);
                 });
+        }
+
+        private void InitializeParryAnimationEvents()
+        {
+            GetAnimationClips(ActionType.Parry)
+                ?.Select(x => x.AnimationClip)
+                .ForEach(parryAnimationClip =>
+                {
+                    AddAnimationEvent(parryAnimationClip, nameof(_host.OnExitParryWindow),
+                        _host.ParryWindowFrames / parryAnimationClip.frameRate);
+                });
+        }
+
+        private static void AddAnimationEvent(AnimationClip animationClip, string functionName, float time)
+        {
+            animationClip.AddEvent(new AnimationEvent
+            {
+                functionName = functionName,
+                time = time
+            });
         }
 
         private List<KotfAnimationClip> GetAnimationClips(ActionType actionType)
