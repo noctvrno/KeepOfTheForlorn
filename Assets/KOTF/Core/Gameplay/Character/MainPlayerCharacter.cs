@@ -16,6 +16,7 @@ namespace KOTF.Core.Gameplay.Character
 
         private CharacterController _characterController;
         private EquipmentService _equipmentService;
+        private InputService _inputService;
 
         #region Serializable fields
         [field: SerializeField]
@@ -50,6 +51,7 @@ namespace KOTF.Core.Gameplay.Character
             base.InitializeServices();
 
             _equipmentService = ServiceProvider.Get<EquipmentService>();
+            _inputService = ServiceProvider.Get<InputService>();
             _equipmentService.AttachEquipmentTo<Weapon>(WeaponPrefabNames.LONGSWORD, gameObject);
         }
 
@@ -76,13 +78,13 @@ namespace KOTF.Core.Gameplay.Character
 
         private void InitializeInputs()
         {
-            _movementInput = InputFactory.GetInput(ActionType.Movement);
-            InputFactory.GetInput(ActionType.Attack)
+            _movementInput = _inputService.Get(ActionType.Movement);
+            _inputService.Get(ActionType.Attack)
                 .WithPerformedCallback(_ => Attack());
-            InputFactory.GetInput(ActionType.Sprint)
+            _inputService.Get(ActionType.Sprint)
                 .WithStartedCallback(_ => BeginSprint())
                 .WithPerformedCallback(_ => EndSprint());
-            InputFactory.GetInput(ActionType.Block)
+            _inputService.Get(ActionType.Block)
                 .WithStartedCallback(_ => BlockAttackHandler.Block())
                 .WithPerformedCallback(_ => BlockAttackHandler.Release());
         }
