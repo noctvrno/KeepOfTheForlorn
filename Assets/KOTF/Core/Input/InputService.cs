@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using KOTF.Core.Services;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Interactions;
@@ -16,11 +17,16 @@ namespace KOTF.Core.Input
         Parry
     }
 
-    public static class InputFactory
+    public class InputService : IService
     {
         private static readonly Dictionary<ActionType, InputHandler> _inputTypeToHandler = new();
 
-        public static void Create()
+        public InputService()
+        {
+            Initialize();
+        }
+
+        public void Initialize()
         {
             foreach (ActionType actionType in Enum.GetValues(typeof(ActionType)))
             {
@@ -69,7 +75,7 @@ namespace KOTF.Core.Input
             return $"<Mouse>/{key}";
         }
 
-        public static InputHandler GetInput(ActionType actionType)
+        public InputHandler Get(ActionType actionType)
         {
             if (!_inputTypeToHandler.TryGetValue(actionType, out var inputHandler))
                 throw new ArgumentException($"Could not retrieve action of type {actionType}.");
